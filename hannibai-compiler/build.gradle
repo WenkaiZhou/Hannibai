@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+dependencies {
+    compile project(':hannibai-annotation')
+    // create java file
+    compile 'com.squareup:javapoet:1.9.0'
+    // create META-INFO
+    compile 'com.google.auto.service:auto-service:1.0-rc3'
+}
