@@ -34,9 +34,9 @@ import static com.kevin.hannibai.compiler.Constants.SET;
  * Created by zhouwenkai on 2017/8/13.
  */
 
-public class PreferenceGenerator extends ElementGenerator {
+public class PreferenceHandleGenerator extends ElementGenerator {
 
-    public PreferenceGenerator(TypeElement element, String classNameSuffix) {
+    public PreferenceHandleGenerator(TypeElement element, String classNameSuffix) {
         super(element, classNameSuffix);
     }
 

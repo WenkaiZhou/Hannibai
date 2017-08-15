@@ -1,9 +1,5 @@
 package com.kevin.hannibai.sample;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
-import android.util.Log;
-
 import com.kevin.hannibai.annotation.DefBoolean;
 import com.kevin.hannibai.annotation.DefFloat;
 import com.kevin.hannibai.annotation.DefInt;

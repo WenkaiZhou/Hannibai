@@ -20,6 +20,7 @@ import javax.lang.model.element.TypeElement;
 
 import static com.kevin.hannibai.compiler.Constants.HANNIBAI;
 import static com.kevin.hannibai.compiler.Constants.HANNIBAI_ANNOTATION_TYPE;
+import static com.kevin.hannibai.compiler.Constants.SUFFIX;
 
 /**
  * Created by zhouwenkai on 2017/8/12.
@@ -51,10 +52,8 @@ public class HannibaiProcessor extends AbstractProcessor {
         }
 
         for (TypeElement typeElement : typeElements) {
-            new PreferenceGenerator(typeElement, HANNIBAI).generate();
+            new PreferenceHandleGenerator(typeElement, SUFFIX).generate();
         }
-
-        new TableGenerator(typeElements).generate();
 
         return true;
     }

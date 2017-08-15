@@ -6,8 +6,12 @@ import android.util.Log;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.kevin.hannibai.Utils.checkNotNull;
 
 /**
  * Created by zhouwenkai on 2017/8/13.
@@ -15,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class RealHannibai {
 
-    private static final String TAG = "Hannibai";
+    private static final String TAG = "RealHannibai";
 
     private Context mContext;
 
@@ -30,7 +34,8 @@ class RealHannibai {
         private static final RealHannibai INSTANCE = new RealHannibai();
     }
 
-    private final Map<Class<?>, Object> preferenceCache = new ConcurrentHashMap<>();
+    private final Map<Method, HandleMethod> handleMethodCache = new ConcurrentHashMap<>();
+    final List<Converter.Factory> converterFactories = new ArrayList<>();
 
     public void init(Context context) {
         this.mContext = context.getApplicationContext();
@@ -38,24 +43,7 @@ class RealHannibai {
 
     public <T> T create(final Class<T> preference) {
         Utils.validatePreferenceInterface(preference);
-        return loadProxy(preference);
-    }
-
-    private <T> T loadProxy(final Class<T> preference) {
-        T result = (T) preferenceCache.get(preference);
-        if (result != null) {
-            return result;
-        }
-
-        synchronized (preferenceCache) {
-            result = (T) preferenceCache.get(preference);
-            if (result == null) {
-                result = createProxy(preference);
-                preferenceCache.put(preference, result);
-            }
-        }
-
-        return result;
+        return createProxy(preference);
     }
 
     private <T> T createProxy(final Class<T> preference) {
@@ -67,16 +55,37 @@ class RealHannibai {
                         if (method.getDeclaringClass() == Object.class) {
                             return method.invoke(this, args);
                         }
-//                        if (platform.isDefaultMethod(method)) {
-//                            return platform.invokeDefaultMethod(method, service, proxy, args);
-//                        }
-//                        ServiceMethod<Object, Object> serviceMethod =
-//                                (ServiceMethod<Object, Object>) loadServiceMethod(method);
-//                        OkHttpCall<Object> okHttpCall = new OkHttpCall<>(serviceMethod, args);
-//                        return serviceMethod.callAdapter.adapt(okHttpCall);
+
+
+                        HandleMethod handleMethod = loadHandleMethod(method);
                         Log.d(TAG, "invoke() called with: proxy = [" + proxy + "], method = [" + method + "], args = [" + args + "]");
                         return true;
                     }
                 });
+    }
+
+    HandleMethod loadHandleMethod(Method method) {
+        HandleMethod result = handleMethodCache.get(method);
+        if (result != null) return result;
+
+        synchronized (handleMethodCache) {
+            result = handleMethodCache.get(method);
+            if (result == null) {
+                result = new HandleMethod.Builder(this, method).build();
+//                handleMethodCache.put(method, result);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Add converter factory for serialization and deserialization of objects.
+     */
+    void addConverterFactory(Converter.Factory factory) {
+        converterFactories.add(checkNotNull(factory, "factory == null"));
+    }
+
+    List<Converter.Factory> converterFactories() {
+        return converterFactories;
     }
 }
