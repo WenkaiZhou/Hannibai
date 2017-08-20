@@ -87,6 +87,27 @@ final class RealHannibai {
         sharedPreferences.edit().putString(key, modelJson).apply();
     }
 
+    final boolean remove(String name, String id, String key) {
+        if (Hannibai.debug) Log.d(TAG, String.format("Remove the %s in the preferences.", key));
+        SharedPreferences sharedPreferences = getSharedPreferences(name, id);
+        String value = sharedPreferences.getString(key, null);
+        if (value != null && value.length() != 0) {
+            if (Hannibai.debug)
+                Log.d(TAG, String.format("Find the %s in the preferences.", key));
+            return sharedPreferences.edit().remove(key).commit();
+        } else {
+            if (Hannibai.debug)
+                Log.d(TAG, String.format("Don`t find the %s in the preferences.", key));
+            return false;
+        }
+    }
+
+    final boolean clear(String name, String id) {
+        if (Hannibai.debug) Log.d(TAG, "Clear the preferences.");
+        SharedPreferences sharedPreferences = getSharedPreferences(name, id);
+        return sharedPreferences.edit().clear().commit();
+    }
+
     final ParameterizedType type(final Class raw, final Type... args) {
         return new ParameterizedType() {
             public Type getRawType() {
@@ -106,11 +127,11 @@ final class RealHannibai {
     /**
      * Set converter factory for serialization and deserialization of objects.
      */
-    void setConverterFactory(Converter.Factory factory) {
+    final void setConverterFactory(Converter.Factory factory) {
         converterFactory = (checkNotNull(factory, "factory == null"));
     }
 
-    Converter.Factory getConverterFactory() {
+    final Converter.Factory getConverterFactory() {
         return checkNotNull(converterFactory, "factory == null");
     }
 

@@ -141,7 +141,10 @@ public class HandleImplGenerator extends ElementGenerator {
                     .addModifiers(Modifier.PUBLIC)
                     .returns(TypeName.BOOLEAN)
                     .addJavadoc(REMOVE_ALL_METHOD_JAVA_DOC)
-                    .addStatement("return false")
+                    .addStatement("return $T.clear($N, $S)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "")
                     .build();
             methodSpecs.add(methodDelete);
         }

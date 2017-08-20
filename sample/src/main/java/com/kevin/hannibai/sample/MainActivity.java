@@ -6,9 +6,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.baidu.muzhi.sp.AskPreferenceHandle;
-import com.google.gson.Gson;
-import com.kevin.hannibai.BaseModel;
 import com.kevin.hannibai.Hannibai;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,12 +30,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void click2(View view) {
-        AskPreferenceHandle askPreferenceHandle = Hannibai.create(AskPreferenceHandle.class);
-        askPreferenceHandle.setVersion(mEtUserName.getText().toString());
-
-
-        String version = askPreferenceHandle.getVersion();
-        Toast.makeText(MainActivity.this, "version = " + version, Toast.LENGTH_SHORT).show();
+//        AskPreferenceHandle askPreferenceHandle = Hannibai.create(AskPreferenceHandle.class);
+//        askPreferenceHandle.setVersion(mEtUserName.getText().toString());
+//
+//
+//        String version = askPreferenceHandle.getVersion();
+//        Toast.makeText(MainActivity.this, "version = " + version, Toast.LENGTH_SHORT).show();
 
     }
 }

@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
  * Created by zhouwenkai on 2017/8/14.
  */
 
-interface Converter<F, T> {
+public interface Converter<F, T> {
 
     T convert(F value);
 
