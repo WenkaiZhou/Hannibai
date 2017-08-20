@@ -77,10 +77,10 @@ public class HandleImplGenerator extends ElementGenerator {
                                         .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
                                         )
-                                        .addStatement("return $T.get($N, $S, $S, $L)",
+                                        .addStatement("return $T.get($N, $L, $S, $L)",
                                                 ClassName.get(PACKAGE_NAME, HANNIBAI),
                                                 "mSharedPreferencesName",
-                                                "",
+                                                "mId",
                                                 enclosedElement.getSimpleName(),
                                                 defValue)
                                         .build()
@@ -92,10 +92,10 @@ public class HandleImplGenerator extends ElementGenerator {
                                         .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
                                         )
-                                        .addStatement("return $T.get($N, $S, $S, $L)",
+                                        .addStatement("return $T.get($N, $L, $S, $L)",
                                                 ClassName.get(PACKAGE_NAME, HANNIBAI),
                                                 "mSharedPreferencesName",
-                                                "",
+                                                "mId",
                                                 enclosedElement.getSimpleName(),
                                                 defValue)
                                         .build()
@@ -112,10 +112,10 @@ public class HandleImplGenerator extends ElementGenerator {
                                         enclosedElement.getSimpleName(),
                                         enclosedElement.getSimpleName())
                                 )
-                                .addStatement("$T.set($N, $S, $S, $L)",
+                                .addStatement("$T.set($N, $L, $S, $L)",
                                         ClassName.get(PACKAGE_NAME, HANNIBAI),
                                         "mSharedPreferencesName",
-                                        "",
+                                        "mId",
                                         enclosedElement.getSimpleName(),
                                         enclosedElement.getSimpleName())
                                 .build()
@@ -129,7 +129,11 @@ public class HandleImplGenerator extends ElementGenerator {
                                 .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
                                         enclosedElement.getSimpleName())
                                 )
-                                .addStatement("return false")
+                                .addStatement("return $T.remove($N, $L, $S)",
+                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                        "mSharedPreferencesName",
+                                        "mId",
+                                        enclosedElement.getSimpleName())
                                 .build()
                 );
             }
@@ -141,10 +145,10 @@ public class HandleImplGenerator extends ElementGenerator {
                     .addModifiers(Modifier.PUBLIC)
                     .returns(TypeName.BOOLEAN)
                     .addJavadoc(REMOVE_ALL_METHOD_JAVA_DOC)
-                    .addStatement("return $T.clear($N, $S)",
+                    .addStatement("return $T.clear($N, $L)",
                             ClassName.get(PACKAGE_NAME, HANNIBAI),
                             "mSharedPreferencesName",
-                            "")
+                            "mId")
                     .build();
             methodSpecs.add(methodDelete);
         }
@@ -152,7 +156,13 @@ public class HandleImplGenerator extends ElementGenerator {
         // Add constructor method
         methodSpecs.add(MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PRIVATE)
-                .addStatement("this.$N = $S", "mSharedPreferencesName", mSharedPreferencesName)
+                .addStatement("this.$N = $S", "mId", "")
+                .build());
+
+        methodSpecs.add(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.get(String.class), "id")
+                .addStatement("this.$N = $L", "mId", "id")
                 .build());
 
         // Holder class
@@ -164,12 +174,23 @@ public class HandleImplGenerator extends ElementGenerator {
                         .build())
                 .build();
 
+        // Field
+        HashSet<FieldSpec> fieldSpecs = new LinkedHashSet<>();
+        fieldSpecs.add(FieldSpec
+                .builder(ClassName.get(String.class), "mSharedPreferencesName", Modifier.PRIVATE, Modifier.FINAL)
+                .initializer("$S", mSharedPreferencesName)
+                .build());
+
+        fieldSpecs.add(FieldSpec
+                .builder(ClassName.get(String.class), "mId", Modifier.PRIVATE, Modifier.FINAL)
+                .build());
+
         return TypeSpec.classBuilder(className)
                 .addSuperinterface(ClassName.get(packageName, mSuperinterface))
                 .addModifiers(Modifier.FINAL)
                 .addType(holder)
                 .addMethods(methodSpecs)
-                .addField(ClassName.get(String.class), "mSharedPreferencesName", Modifier.PRIVATE)
+                .addFields(fieldSpecs)
                 .addJavadoc(CLASS_JAVA_DOC)
                 .build();
     }

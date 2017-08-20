@@ -25,6 +25,10 @@ public final class Hannibai {
         return RealHannibai.getInstance().create(preference);
     }
 
+    public static final <T> T create(final Class<T> preference, String id) {
+        return RealHannibai.getInstance().create(preference, id);
+    }
+
     public static final void setConverterFactory(Converter.Factory factory) {
         RealHannibai.getInstance().setConverterFactory(factory);
     }
@@ -37,8 +41,8 @@ public final class Hannibai {
         RealHannibai.getInstance().set(name, id, key, newValue);
     }
 
-    public static final void remove(String name, String id, String key) {
-        RealHannibai.getInstance().remove(name, id, key);
+    public static final boolean remove(String name, String id, String key) {
+        return RealHannibai.getInstance().remove(name, id, key);
     }
 
     public static final boolean clear(String name, String id) {

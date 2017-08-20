@@ -37,5 +37,12 @@ public class MainActivity extends AppCompatActivity {
 //        String version = askPreferenceHandle.getVersion();
 //        Toast.makeText(MainActivity.this, "version = " + version, Toast.LENGTH_SHORT).show();
 
+        SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class, "12306");
+        samplePreferenceHandle.setUserName(mEtUserName.getText().toString());
+
+
+        String userName = samplePreferenceHandle.getUserName();
+        Toast.makeText(MainActivity.this, "userName = " + userName, Toast.LENGTH_SHORT).show();
+
     }
 }

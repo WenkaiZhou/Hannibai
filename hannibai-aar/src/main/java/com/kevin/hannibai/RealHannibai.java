@@ -47,6 +47,18 @@ final class RealHannibai {
         }
     }
 
+    final public <T> T create(final Class<T> preference, String id) {
+        Utils.validateHandleInterface(preference);
+        try {
+            return (T) Class.forName(preference.getName() + "Impl")
+                    .getConstructor(String.class)
+                    .newInstance(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("出错了");
+        }
+    }
+
     final Context getContext() {
         return checkNotNull(mContext, "context == null");
     }
