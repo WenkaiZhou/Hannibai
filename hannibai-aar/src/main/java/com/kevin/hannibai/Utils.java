@@ -6,7 +6,7 @@ package com.kevin.hannibai;
 
 final class Utils {
 
-    static <T> void validatePreferenceInterface(Class<T> preference) {
+    static final <T> void validateHandleInterface(Class<T> preference) {
         if (!preference.isInterface()) {
             throw new IllegalArgumentException("Preference declarations must be interfaces.");
         }
@@ -20,7 +20,7 @@ final class Utils {
         }
     }
 
-    static <T> T checkNotNull(T object, String message) {
+    static final <T> T checkNotNull(T object, String message) {
         if (object == null) {
             throw new NullPointerException(message);
         }

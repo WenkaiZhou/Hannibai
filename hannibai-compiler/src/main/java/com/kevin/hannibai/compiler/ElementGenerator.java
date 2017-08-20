@@ -13,9 +13,9 @@ import javax.lang.model.element.TypeElement;
 
 public abstract class ElementGenerator implements Generator {
 
-    private final TypeElement mElement;
-    private final String mPackageName;
-    private final String mClassName;
+    protected final TypeElement mElement;
+    protected final String mPackageName;
+    protected final String mClassName;
 
     public ElementGenerator(TypeElement element, String classNameSuffix) {
         this(element,

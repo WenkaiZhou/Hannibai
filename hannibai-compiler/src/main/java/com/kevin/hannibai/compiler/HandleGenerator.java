@@ -1,10 +1,5 @@
 package com.kevin.hannibai.compiler;
 
-import com.kevin.hannibai.annotation.DefBoolean;
-import com.kevin.hannibai.annotation.DefFloat;
-import com.kevin.hannibai.annotation.DefInt;
-import com.kevin.hannibai.annotation.DefLong;
-import com.kevin.hannibai.annotation.DefString;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
@@ -34,9 +29,9 @@ import static com.kevin.hannibai.compiler.Constants.SET;
  * Created by zhouwenkai on 2017/8/13.
  */
 
-public class PreferenceHandleGenerator extends ElementGenerator {
+class HandleGenerator extends ElementGenerator {
 
-    public PreferenceHandleGenerator(TypeElement element, String classNameSuffix) {
+    public HandleGenerator(TypeElement element, String classNameSuffix) {
         super(element, classNameSuffix);
     }
 
@@ -49,7 +44,7 @@ public class PreferenceHandleGenerator extends ElementGenerator {
             if (enclosedElement.getKind() == ElementKind.FIELD) {
                 String formatName = Utils.capitalize(enclosedElement.getSimpleName());
 
-                AnnotationSpec annotationSpec = createAnnotationSpec(enclosedElement,
+                AnnotationSpec annotationSpec = HannibaiUtils.createDefValueAnnotation(enclosedElement,
                         enclosedElement.asType().toString());
 
                 // The get method
@@ -117,45 +112,4 @@ public class PreferenceHandleGenerator extends ElementGenerator {
                 .build();
     }
 
-    /**
-     * Create AnnotationSpec
-     *
-     * @param element
-     * @param typeName
-     * @return
-     */
-    private AnnotationSpec createAnnotationSpec(Element element, String typeName) {
-        if (typeName.equals(int.class.getName())
-                || typeName.equals(Integer.class.getName())) {
-            DefInt defInt = element.getAnnotation(DefInt.class);
-            return AnnotationSpec.builder(DefInt.class)
-                    .addMember("value", "$L", defInt == null ? 0 : defInt.value())
-                    .build();
-        } else if (typeName.equals(String.class.getName())) {
-            DefString defString = element.getAnnotation(DefString.class);
-            return AnnotationSpec.builder(DefString.class)
-                    .addMember("value", "$S", defString == null ? "" : defString.value())
-                    .build();
-        } else if (typeName.equals(boolean.class.getName())
-                || typeName.equals(Boolean.class.getName())) {
-            DefBoolean defBoolean = element.getAnnotation(DefBoolean.class);
-            return AnnotationSpec.builder(DefBoolean.class)
-                    .addMember("value", "$L", defBoolean == null ? false : defBoolean.value())
-                    .build();
-        } else if (typeName.equals(long.class.getName())
-                || typeName.equals(Long.class.getName())) {
-            DefLong defLong = element.getAnnotation(DefLong.class);
-            return AnnotationSpec.builder(DefLong.class)
-                    .addMember("value", "$LL", defLong == null ? 0 : defLong.value())
-                    .build();
-        } else if (typeName.equals(float.class.getName())
-                || typeName.equals(Float.class.getName())) {
-            DefFloat defFloat = element.getAnnotation(DefFloat.class);
-            return AnnotationSpec.builder(DefFloat.class)
-                    .addMember("value", "$LF", defFloat == null ? 0 : defFloat.value())
-                    .build();
-        } else {
-            return null;
-        }
-    }
 }

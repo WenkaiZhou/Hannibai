@@ -13,6 +13,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Hannibai.init(this);
-        Hannibai.addConverterFactory(GsonConverterFactory.create());
+        Hannibai.setDebug(true);
+        Hannibai.setConverterFactory(GsonConverterFactory.create());
     }
 }

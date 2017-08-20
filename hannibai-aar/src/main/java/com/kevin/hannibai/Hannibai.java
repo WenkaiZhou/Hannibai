@@ -23,8 +23,16 @@ public final class Hannibai {
         return RealHannibai.getInstance().create(preference);
     }
 
-    public static void addConverterFactory(Converter.Factory factory) {
-        RealHannibai.getInstance().addConverterFactory(factory);
+    public static void setConverterFactory(Converter.Factory factory) {
+        RealHannibai.getInstance().setConverterFactory(factory);
+    }
+
+    public static <T> T get(String name, String id, String key, T defValue) {
+        return RealHannibai.getInstance().get(name, id, key, defValue);
+    }
+
+    public static <T> void set(String name, String id, String key, T newValue) {
+        RealHannibai.getInstance().set(name, id, key, newValue);
     }
 
 }

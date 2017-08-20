@@ -1,15 +1,11 @@
 package com.kevin.hannibai;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import static com.kevin.hannibai.Utils.checkNotNull;
 
@@ -17,11 +13,12 @@ import static com.kevin.hannibai.Utils.checkNotNull;
  * Created by zhouwenkai on 2017/8/13.
  */
 
-class RealHannibai {
+final class RealHannibai {
 
     private static final String TAG = "RealHannibai";
 
     private Context mContext;
+    private Converter.Factory converterFactory;
 
     private RealHannibai() {
     }
@@ -34,58 +31,87 @@ class RealHannibai {
         private static final RealHannibai INSTANCE = new RealHannibai();
     }
 
-    private final Map<Method, HandleMethod> handleMethodCache = new ConcurrentHashMap<>();
-    final List<Converter.Factory> converterFactories = new ArrayList<>();
-
     public void init(Context context) {
         this.mContext = context.getApplicationContext();
     }
 
-    public <T> T create(final Class<T> preference) {
-        Utils.validatePreferenceInterface(preference);
-        return createProxy(preference);
-    }
-
-    private <T> T createProxy(final Class<T> preference) {
-        return (T) Proxy.newProxyInstance(preference.getClassLoader(), new Class<?>[]{preference},
-                new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//                        // If the method is a method from Object then defer to normal invocation.
-                        if (method.getDeclaringClass() == Object.class) {
-                            return method.invoke(this, args);
-                        }
-
-
-                        HandleMethod handleMethod = loadHandleMethod(method);
-                        Log.d(TAG, "invoke() called with: proxy = [" + proxy + "], method = [" + method + "], args = [" + args + "]");
-                        return true;
-                    }
-                });
-    }
-
-    HandleMethod loadHandleMethod(Method method) {
-        HandleMethod result = handleMethodCache.get(method);
-        if (result != null) return result;
-
-        synchronized (handleMethodCache) {
-            result = handleMethodCache.get(method);
-            if (result == null) {
-                result = new HandleMethod.Builder(this, method).build();
-//                handleMethodCache.put(method, result);
-            }
+    final public <T> T create(final Class<T> preference) {
+        Utils.validateHandleInterface(preference);
+        try {
+            return (T) Class.forName(preference.getName() + "Impl")
+                    .getMethod("getInstance")
+                    .invoke(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("出错了");
         }
-        return result;
+    }
+
+    final Context getContext() {
+        return checkNotNull(mContext, "context == null");
+    }
+
+    final SharedPreferences getSharedPreferences(String name, String id) {
+        return getContext().getSharedPreferences(name + id, Context.MODE_PRIVATE);
+    }
+
+    final <T> T get(String name, String id, String key, T defValue) {
+        if (Hannibai.debug) Log.d(TAG, String.format("Retrieve the %s from the preferences.", key));
+        String value = getSharedPreferences(name, id).getString(key, null);
+        if (value == null || value.length() == 0) {
+            if (Hannibai.debug)
+                Log.d(TAG, String.format("Value is empty, returns the default value ( %s ).", defValue));
+            return defValue;
+        } else {
+            ParameterizedType type = type(BaseModel.class, defValue.getClass());
+            BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(value);
+            if (Hannibai.debug)
+                Log.d(TAG, String.format("Value is %s, create at %s, update at %s.", model.data, model.createTime, model.updateTime));
+            return model.data;
+        }
+    }
+
+    final <T> void set(String name, String id, String key, T newValue) {
+        if (Hannibai.debug) Log.d(TAG, String.format("Set the %s value to the preferences.", key));
+        BaseModel<T> model;
+        ParameterizedType type = type(BaseModel.class, newValue.getClass());
+        SharedPreferences sharedPreferences = getSharedPreferences(name, id);
+        String value = sharedPreferences.getString(key, null);
+        if (value != null && value.length() != 0) {
+            model = (BaseModel<T>) getConverterFactory().toType(type).convert(value);
+            model.update(newValue);
+        } else {
+            model = new BaseModel<>(newValue);
+        }
+        String modelJson = getConverterFactory().fromType(type).convert(model);
+        sharedPreferences.edit().putString(key, modelJson).apply();
+    }
+
+    final ParameterizedType type(final Class raw, final Type... args) {
+        return new ParameterizedType() {
+            public Type getRawType() {
+                return raw;
+            }
+
+            public Type[] getActualTypeArguments() {
+                return args;
+            }
+
+            public Type getOwnerType() {
+                return null;
+            }
+        };
     }
 
     /**
-     * Add converter factory for serialization and deserialization of objects.
+     * Set converter factory for serialization and deserialization of objects.
      */
-    void addConverterFactory(Converter.Factory factory) {
-        converterFactories.add(checkNotNull(factory, "factory == null"));
+    void setConverterFactory(Converter.Factory factory) {
+        converterFactory = (checkNotNull(factory, "factory == null"));
     }
 
-    List<Converter.Factory> converterFactories() {
-        return converterFactories;
+    Converter.Factory getConverterFactory() {
+        return checkNotNull(converterFactory, "factory == null");
     }
+
 }
