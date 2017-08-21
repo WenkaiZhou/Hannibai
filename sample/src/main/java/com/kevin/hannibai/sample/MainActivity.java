@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2017 Kevin zhou
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.kevin.hannibai.sample;
 
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +35,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void click1(View view) {
+        long startTime = System.currentTimeMillis();
         SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class);
         samplePreferenceHandle.setUserName(mEtUserName.getText().toString());
 
 
         String userName = samplePreferenceHandle.getUserName();
-        Toast.makeText(MainActivity.this, "userName = " + userName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "userName = " + userName + "time = " + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 
     }
 
@@ -37,12 +53,13 @@ public class MainActivity extends AppCompatActivity {
 //        String version = askPreferenceHandle.getVersion();
 //        Toast.makeText(MainActivity.this, "version = " + version, Toast.LENGTH_SHORT).show();
 
-        SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class, "12306");
+        long startTime = System.currentTimeMillis();
+        SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class, "my_id");
         samplePreferenceHandle.setUserName(mEtUserName.getText().toString());
 
 
         String userName = samplePreferenceHandle.getUserName();
-        Toast.makeText(MainActivity.this, "userName = " + userName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "userName = " + userName + "time = " + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 
     }
 }
