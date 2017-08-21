@@ -105,7 +105,7 @@ final class RealHannibai {
         SharedPreferences sharedPreferences = getSharedPreferences(name, id);
         String value = sharedPreferences.getString(key, null);
         if (value != null && value.length() != 0) {
-            model = (BaseModel<T>) getConverterFactory().toType(type).convert(value);
+            model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
             model.update(newValue);
         } else {
             model = new BaseModel<>(newValue);
