@@ -15,28 +15,26 @@
  */
 package com.kevin.hannibai;
 
-import java.util.Date;
-
 /**
  * Created by zhouwenkai on 2017/8/14.
  */
 
 final class BaseModel<T> {
 
-    public String createTime;
-    public String updateTime;
-    public String expireTime;
+    public long createTime;
+    public long updateTime;
+    public long expireTime;
     public T data;
 
     public BaseModel(T data) {
         this.data = data;
-        this.createTime = DateUtil.dateToString(new Date());
-        this.updateTime = DateUtil.dateToString(new Date());
+        this.createTime = System.currentTimeMillis();
+        this.updateTime = System.currentTimeMillis();
     }
 
     public void update(T data) {
         this.data = data;
-        this.updateTime = DateUtil.dateToString(new Date());
+        this.updateTime = System.currentTimeMillis();
     }
 
 }
