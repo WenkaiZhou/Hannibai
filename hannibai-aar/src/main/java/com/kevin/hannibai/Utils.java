@@ -41,4 +41,13 @@ final class Utils {
         }
         return object;
     }
+
+    static final String endecode(String input) {
+        char[] key = "Hannibai".toCharArray();
+        char[] inChars = input.toCharArray();
+        for (int i = 0; i < inChars.length; i++) {
+            inChars[i] = (char) (inChars[i] ^ key[i % key.length]);
+        }
+        return new String(inChars);
+    }
 }

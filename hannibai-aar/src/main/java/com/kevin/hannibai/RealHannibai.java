@@ -91,7 +91,7 @@ final class RealHannibai {
             return defValue;
         } else {
             ParameterizedType type = type(BaseModel.class, defValue.getClass());
-            BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(value);
+            BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
             if (Hannibai.debug)
                 Log.d(TAG, String.format("Value is %s, create at %s, update at %s.", model.data, model.createTime, model.updateTime));
             return model.data;
@@ -111,7 +111,7 @@ final class RealHannibai {
             model = new BaseModel<>(newValue);
         }
         String modelJson = getConverterFactory().fromType(type).convert(model);
-        sharedPreferences.edit().putString(key, modelJson).apply();
+        sharedPreferences.edit().putString(key, Utils.endecode(modelJson)).apply();
     }
 
     final boolean remove(String name, String id, String key) {
