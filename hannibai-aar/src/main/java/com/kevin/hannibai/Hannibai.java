@@ -52,16 +52,24 @@ public final class Hannibai {
         return RealHannibai.getInstance().get(name, id, key, defValue);
     }
 
-    public static final <T> void set(String name, String id, String key, T newValue) {
-        RealHannibai.getInstance().set(name, id, key, newValue);
+    public static final <T> void set1(String name, String id, String key, T newValue) {
+        RealHannibai.getInstance().set1(name, id, key, newValue);
     }
 
-    public static final boolean remove(String name, String id, String key) {
-        return RealHannibai.getInstance().remove(name, id, key);
+    public static final <T> boolean set2(String name, String id, String key, T newValue) {
+        return RealHannibai.getInstance().set2(name, id, key, newValue);
     }
 
-    public static final boolean clear(String name, String id) {
-        return RealHannibai.getInstance().clear(name, id);
+    public static final void remove1(String name, String id, String key) {
+        RealHannibai.getInstance().remove1(name, id, key);
+    }
+
+    public static final boolean remove2(String name, String id, String key) {
+        return RealHannibai.getInstance().remove2(name, id, key);
+    }
+
+    public static final void clear(String name, String id) {
+        RealHannibai.getInstance().clear(name, id);
     }
 
 }

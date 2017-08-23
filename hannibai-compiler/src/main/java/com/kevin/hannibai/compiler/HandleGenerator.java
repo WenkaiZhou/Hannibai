@@ -15,6 +15,9 @@
  */
 package com.kevin.hannibai.compiler;
 
+import com.kevin.hannibai.annotation.Apply;
+import com.kevin.hannibai.annotation.Commit;
+import com.kevin.hannibai.annotation.DefInt;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
@@ -59,12 +62,14 @@ class HandleGenerator extends ElementGenerator {
             if (enclosedElement.getKind() == ElementKind.FIELD) {
                 String formatName = Utils.capitalize(enclosedElement.getSimpleName());
 
-                AnnotationSpec annotationSpec = HannibaiUtils.createDefValueAnnotation(enclosedElement,
+                AnnotationSpec defValueAnnotation = HannibaiUtils.createDefValueAnnotation(enclosedElement,
                         enclosedElement.asType().toString());
+
+                boolean isCommit = enclosedElement.getAnnotation(Commit.class) == null;
 
                 // The get method
                 methodSpecs.add(
-                        annotationSpec == null ?
+                        defValueAnnotation == null ?
                                 MethodSpec.methodBuilder(GET + formatName)
                                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                                         .returns(ClassName.get(enclosedElement.asType()))
@@ -76,7 +81,7 @@ class HandleGenerator extends ElementGenerator {
                                 MethodSpec.methodBuilder(GET + formatName)
                                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                                         .returns(ClassName.get(enclosedElement.asType()))
-                                        .addAnnotation(annotationSpec)
+                                        .addAnnotation(defValueAnnotation)
                                         .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
                                         )
@@ -85,27 +90,52 @@ class HandleGenerator extends ElementGenerator {
 
                 // The set method
                 methodSpecs.add(
-                        MethodSpec.methodBuilder(SET + formatName)
-                                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                .addParameter(ClassName.get(enclosedElement.asType()),
-                                        enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                .returns(TypeName.VOID)
-                                .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
-                                        enclosedElement.getSimpleName(),
-                                        enclosedElement.getSimpleName())
-                                )
-                                .build()
+                        isCommit ?
+                                MethodSpec.methodBuilder(SET + formatName)
+                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                        .addParameter(ClassName.get(enclosedElement.asType()),
+                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
+                                        .returns(TypeName.VOID)
+                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
+                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName(),
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .build()
+                                :
+                                MethodSpec.methodBuilder(SET + formatName)
+                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                        .addParameter(ClassName.get(enclosedElement.asType()),
+                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
+                                        .returns(TypeName.BOOLEAN)
+                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
+                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName(),
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .build()
                 );
 
                 // The remove method
                 methodSpecs.add(
-                        MethodSpec.methodBuilder(REMOVE + formatName)
-                                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                .returns(TypeName.BOOLEAN)
-                                .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
-                                        enclosedElement.getSimpleName())
-                                )
-                                .build()
+                        isCommit ?
+                                MethodSpec.methodBuilder(REMOVE + formatName)
+                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                        .returns(TypeName.VOID)
+                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
+                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .build()
+                                :
+                                MethodSpec.methodBuilder(REMOVE + formatName)
+                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                        .returns(TypeName.BOOLEAN)
+                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
+                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .build()
                 );
             }
         }
@@ -114,7 +144,8 @@ class HandleGenerator extends ElementGenerator {
             // The deleteAll method
             MethodSpec methodDelete = MethodSpec.methodBuilder(REMOVE_ALL)
                     .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                    .returns(TypeName.BOOLEAN)
+                    .returns(TypeName.VOID)
+                    .addAnnotation(AnnotationSpec.builder(Apply.class).build())
                     .addJavadoc(REMOVE_ALL_METHOD_JAVA_DOC)
                     .build();
             methodSpecs.add(methodDelete);

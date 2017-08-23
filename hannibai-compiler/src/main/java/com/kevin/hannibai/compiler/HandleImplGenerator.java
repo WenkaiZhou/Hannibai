@@ -15,6 +15,8 @@
  */
 package com.kevin.hannibai.compiler;
 
+import com.kevin.hannibai.annotation.Apply;
+import com.kevin.hannibai.annotation.Commit;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -118,38 +120,74 @@ public class HandleImplGenerator extends ElementGenerator {
 
                 // The set method
                 methodSpecs.add(
-                        MethodSpec.methodBuilder(SET + formatName)
-                                .addModifiers(Modifier.PUBLIC)
-                                .addParameter(ClassName.get(enclosedElement.asType()),
-                                        enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                .returns(TypeName.VOID)
-                                .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
-                                        enclosedElement.getSimpleName(),
-                                        enclosedElement.getSimpleName())
-                                )
-                                .addStatement("$T.set($N, $L, $S, $L)",
-                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                        "mSharedPreferencesName",
-                                        "mId",
-                                        enclosedElement.getSimpleName(),
-                                        enclosedElement.getSimpleName())
-                                .build()
+                        enclosedElement.getAnnotation(Commit.class) == null ?
+                                MethodSpec.methodBuilder(SET + formatName)
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .addParameter(ClassName.get(enclosedElement.asType()),
+                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
+                                        .returns(TypeName.VOID)
+                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
+                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName(),
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .addStatement("$T.set1($N, $L, $S, $L)",
+                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                "mSharedPreferencesName",
+                                                "mId",
+                                                enclosedElement.getSimpleName(),
+                                                enclosedElement.getSimpleName())
+                                        .build()
+                                :
+                                MethodSpec.methodBuilder(SET + formatName)
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .addParameter(ClassName.get(enclosedElement.asType()),
+                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
+                                        .returns(TypeName.BOOLEAN)
+                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
+                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName(),
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .addStatement("return $T.set2($N, $L, $S, $L)",
+                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                "mSharedPreferencesName",
+                                                "mId",
+                                                enclosedElement.getSimpleName(),
+                                                enclosedElement.getSimpleName())
+                                        .build()
                 );
 
                 // The remove method
                 methodSpecs.add(
-                        MethodSpec.methodBuilder(REMOVE + formatName)
-                                .addModifiers(Modifier.PUBLIC)
-                                .returns(TypeName.BOOLEAN)
-                                .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
-                                        enclosedElement.getSimpleName())
-                                )
-                                .addStatement("return $T.remove($N, $L, $S)",
-                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                        "mSharedPreferencesName",
-                                        "mId",
-                                        enclosedElement.getSimpleName())
-                                .build()
+                        enclosedElement.getAnnotation(Commit.class) == null ?
+                                MethodSpec.methodBuilder(REMOVE + formatName)
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .returns(TypeName.VOID)
+                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
+                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .addStatement("$T.remove1($N, $L, $S)",
+                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                "mSharedPreferencesName",
+                                                "mId",
+                                                enclosedElement.getSimpleName())
+                                        .build()
+                                :
+                                MethodSpec.methodBuilder(REMOVE + formatName)
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .returns(TypeName.BOOLEAN)
+                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
+                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .addStatement("return $T.remove2($N, $L, $S)",
+                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                "mSharedPreferencesName",
+                                                "mId",
+                                                enclosedElement.getSimpleName())
+                                        .build()
                 );
             }
         }
@@ -158,9 +196,10 @@ public class HandleImplGenerator extends ElementGenerator {
             // The deleteAll method
             MethodSpec methodDelete = MethodSpec.methodBuilder(REMOVE_ALL)
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(TypeName.BOOLEAN)
+                    .returns(TypeName.VOID)
+                    .addAnnotation(AnnotationSpec.builder(Apply.class).build())
                     .addJavadoc(REMOVE_ALL_METHOD_JAVA_DOC)
-                    .addStatement("return $T.clear($N, $L)",
+                    .addStatement("$T.clear($N, $L)",
                             ClassName.get(PACKAGE_NAME, HANNIBAI),
                             "mSharedPreferencesName",
                             "mId")

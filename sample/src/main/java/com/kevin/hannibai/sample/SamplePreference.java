@@ -15,6 +15,7 @@
  */
 package com.kevin.hannibai.sample;
 
+import com.kevin.hannibai.annotation.Commit;
 import com.kevin.hannibai.annotation.DefBoolean;
 import com.kevin.hannibai.annotation.DefFloat;
 import com.kevin.hannibai.annotation.DefInt;
@@ -30,6 +31,7 @@ import com.kevin.hannibai.sample.bean.User;
 @SharePreference
 public class SamplePreference {
     @DefString("zwenkai")
+    @Commit
     public String userName;
     @DefInt(18)
     public int age;

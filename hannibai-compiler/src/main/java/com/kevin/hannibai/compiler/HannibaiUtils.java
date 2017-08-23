@@ -31,7 +31,7 @@ import javax.lang.model.element.Element;
 final class HannibaiUtils {
 
     /**
-     * Create AnnotationSpec
+     * Create DefValue AnnotationSpec
      *
      * @param element
      * @param typeName

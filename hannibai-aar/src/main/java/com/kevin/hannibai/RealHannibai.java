@@ -98,7 +98,15 @@ final class RealHannibai {
         }
     }
 
-    final <T> void set(String name, String id, String key, T newValue) {
+    final <T> void set1(String name, String id, String key, T newValue) {
+        set(name, id, key, newValue).apply();
+    }
+
+    final <T> boolean set2(String name, String id, String key, T newValue) {
+        return set(name, id, key, newValue).commit();
+    }
+
+    private final <T> SharedPreferences.Editor set(String name, String id, String key, T newValue) {
         if (Hannibai.debug) Log.d(TAG, String.format("Set the %s value to the preferences.", key));
         BaseModel<T> model;
         ParameterizedType type = type(BaseModel.class, newValue.getClass());
@@ -111,28 +119,27 @@ final class RealHannibai {
             model = new BaseModel<>(newValue);
         }
         String modelJson = getConverterFactory().fromType(type).convert(model);
-        sharedPreferences.edit().putString(key, Utils.endecode(modelJson)).apply();
+        return sharedPreferences.edit().putString(key, Utils.endecode(modelJson));
     }
 
-    final boolean remove(String name, String id, String key) {
+    final void remove1(String name, String id, String key) {
+        remove(name, id, key).apply();
+    }
+
+    final boolean remove2(String name, String id, String key) {
+        return remove(name, id, key).commit();
+    }
+
+    private final SharedPreferences.Editor remove(String name, String id, String key) {
         if (Hannibai.debug) Log.d(TAG, String.format("Remove the %s in the preferences.", key));
         SharedPreferences sharedPreferences = getSharedPreferences(name, id);
-        String value = sharedPreferences.getString(key, null);
-        if (value != null && value.length() != 0) {
-            if (Hannibai.debug)
-                Log.d(TAG, String.format("Find the %s in the preferences.", key));
-            return sharedPreferences.edit().remove(key).commit();
-        } else {
-            if (Hannibai.debug)
-                Log.d(TAG, String.format("Don`t find the %s in the preferences.", key));
-            return false;
-        }
+        return sharedPreferences.edit().remove(key);
     }
 
-    final boolean clear(String name, String id) {
+    final void clear(String name, String id) {
         if (Hannibai.debug) Log.d(TAG, "Clear the preferences.");
         SharedPreferences sharedPreferences = getSharedPreferences(name, id);
-        return sharedPreferences.edit().clear().commit();
+        sharedPreferences.edit().clear().apply();
     }
 
     final ParameterizedType type(final Class raw, final Type... args) {
