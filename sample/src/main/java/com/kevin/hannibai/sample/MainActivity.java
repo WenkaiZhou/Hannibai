@@ -15,13 +15,15 @@
  */
 package com.kevin.hannibai.sample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.kevin.hannibai.Hannibai;
+
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,14 +37,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void click1(View view) {
-        long startTime = System.currentTimeMillis();
         SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class);
         samplePreferenceHandle.setUserName(mEtUserName.getText().toString());
-
-
-        String userName = samplePreferenceHandle.getUserName();
-        Toast.makeText(MainActivity.this, "userName = " + userName + "time = " + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
-
     }
 
     public void click2(View view) {
@@ -54,10 +50,7 @@ public class MainActivity extends AppCompatActivity {
 //        Toast.makeText(MainActivity.this, "version = " + version, Toast.LENGTH_SHORT).show();
 
         long startTime = System.currentTimeMillis();
-        SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class, "my_id");
-        samplePreferenceHandle.setUserName(mEtUserName.getText().toString());
-
-
+        SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class);
         String userName = samplePreferenceHandle.getUserName();
         Toast.makeText(MainActivity.this, "userName = " + userName + "time = " + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 

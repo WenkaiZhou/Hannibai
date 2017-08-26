@@ -87,26 +87,32 @@ final class RealHannibai {
         String value = getSharedPreferences(name, id).getString(key, null);
         if (value == null || value.length() == 0) {
             if (Hannibai.debug)
-                Log.d(TAG, String.format("Value is empty, returns the default value ( %s ).", defValue));
+                Log.d(TAG, String.format("Value of %s is empty, returns the default %s.", key, defValue));
             return defValue;
         } else {
             ParameterizedType type = type(BaseModel.class, defValue.getClass());
             BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
             if (Hannibai.debug)
-                Log.d(TAG, String.format("Value is %s, create at %s, update at %s.", model.data, model.createTime, model.updateTime));
-            return model.data;
+                Log.d(TAG, String.format("Value of %s is %s, create at %s, update at %s.", key, model.data, model.createTime, model.updateTime));
+            if (System.currentTimeMillis() > model.expireTime) {
+                if (Hannibai.debug)
+                    Log.d(TAG, String.format("Value of %s is %s expired.", key, model.data));
+                return defValue;
+            } else {
+                return model.data;
+            }
         }
     }
 
-    final <T> void set1(String name, String id, String key, T newValue) {
-        set(name, id, key, newValue).apply();
+    final <T> void set1(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
+        set(name, id, key, expire, updateExpire, newValue).apply();
     }
 
-    final <T> boolean set2(String name, String id, String key, T newValue) {
-        return set(name, id, key, newValue).commit();
+    final <T> boolean set2(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
+        return set(name, id, key, expire, updateExpire, newValue).commit();
     }
 
-    private final <T> SharedPreferences.Editor set(String name, String id, String key, T newValue) {
+    private final <T> SharedPreferences.Editor set(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
         if (Hannibai.debug) Log.d(TAG, String.format("Set the %s value to the preferences.", key));
         BaseModel<T> model;
         ParameterizedType type = type(BaseModel.class, newValue.getClass());
@@ -114,9 +120,15 @@ final class RealHannibai {
         String value = sharedPreferences.getString(key, null);
         if (value != null && value.length() != 0) {
             model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
-            model.update(newValue);
+            if (System.currentTimeMillis() > model.expireTime) {
+                model = new BaseModel<>(newValue, expire);
+                if (Hannibai.debug)
+                    Log.d(TAG, String.format("Value of %s is %s expired.", key, model.data));
+            } else {
+                model.update(newValue, updateExpire);
+            }
         } else {
-            model = new BaseModel<>(newValue);
+            model = new BaseModel<>(newValue, expire);
         }
         String modelJson = getConverterFactory().fromType(type).convert(model);
         return sharedPreferences.edit().putString(key, Utils.endecode(modelJson));

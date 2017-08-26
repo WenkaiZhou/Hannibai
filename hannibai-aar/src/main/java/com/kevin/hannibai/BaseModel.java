@@ -24,17 +24,23 @@ final class BaseModel<T> {
     public long createTime;
     public long updateTime;
     public long expireTime;
+    public long expire;
     public T data;
 
-    public BaseModel(T data) {
+    public BaseModel(T data, long expire) {
         this.data = data;
         this.createTime = System.currentTimeMillis();
-        this.updateTime = System.currentTimeMillis();
+        this.updateTime = createTime;
+        this.expire = expire;
+        this.expireTime = createTime + expire;
     }
 
-    public void update(T data) {
+    public void update(T data, boolean update) {
         this.data = data;
         this.updateTime = System.currentTimeMillis();
+        if (update) {
+            this.expireTime = updateTime + expire;
+        }
     }
 
 }

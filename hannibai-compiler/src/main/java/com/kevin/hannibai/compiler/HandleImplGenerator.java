@@ -85,6 +85,11 @@ public class HandleImplGenerator extends ElementGenerator {
 
                 Object defValue = HannibaiUtils.getDefValue(enclosedElement, enclosedElement.asType().toString());
 
+                AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
+
+                String expireValue = HannibaiUtils.getExpireValue(enclosedElement);
+                boolean expireUpdate = HannibaiUtils.getExpireUpdate(enclosedElement);
+
                 // The get method
                 methodSpecs.add(
                         annotationSpec == null ?
@@ -127,15 +132,18 @@ public class HandleImplGenerator extends ElementGenerator {
                                                 enclosedElement.getSimpleName().toString(), Modifier.FINAL)
                                         .returns(TypeName.VOID)
                                         .addAnnotation(AnnotationSpec.builder(Apply.class).build())
+                                        .addAnnotation(expireAnnotation)
                                         .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName(),
                                                 enclosedElement.getSimpleName())
                                         )
-                                        .addStatement("$T.set1($N, $L, $S, $L)",
+                                        .addStatement("$T.set1($N, $L, $S, $L, $L, $L)",
                                                 ClassName.get(PACKAGE_NAME, HANNIBAI),
                                                 "mSharedPreferencesName",
                                                 "mId",
                                                 enclosedElement.getSimpleName(),
+                                                expireValue,
+                                                expireUpdate,
                                                 enclosedElement.getSimpleName())
                                         .build()
                                 :
@@ -145,15 +153,18 @@ public class HandleImplGenerator extends ElementGenerator {
                                                 enclosedElement.getSimpleName().toString(), Modifier.FINAL)
                                         .returns(TypeName.BOOLEAN)
                                         .addAnnotation(AnnotationSpec.builder(Commit.class).build())
+                                        .addAnnotation(expireAnnotation)
                                         .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName(),
                                                 enclosedElement.getSimpleName())
                                         )
-                                        .addStatement("return $T.set2($N, $L, $S, $L)",
+                                        .addStatement("return $T.set2($N, $L, $S, $L, $L, $L)",
                                                 ClassName.get(PACKAGE_NAME, HANNIBAI),
                                                 "mSharedPreferencesName",
                                                 "mId",
                                                 enclosedElement.getSimpleName(),
+                                                expireValue,
+                                                expireUpdate,
                                                 enclosedElement.getSimpleName())
                                         .build()
                 );

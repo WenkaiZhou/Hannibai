@@ -67,12 +67,15 @@ class HandleGenerator extends ElementGenerator {
 
                 boolean isCommit = enclosedElement.getAnnotation(Commit.class) == null;
 
+                AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
+
                 // The get method
                 methodSpecs.add(
                         defValueAnnotation == null ?
                                 MethodSpec.methodBuilder(GET + formatName)
                                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                                         .returns(ClassName.get(enclosedElement.asType()))
+                                        .addAnnotation(expireAnnotation)
                                         .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
                                         )
@@ -82,6 +85,7 @@ class HandleGenerator extends ElementGenerator {
                                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                                         .returns(ClassName.get(enclosedElement.asType()))
                                         .addAnnotation(defValueAnnotation)
+                                        .addAnnotation(expireAnnotation)
                                         .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
                                         )

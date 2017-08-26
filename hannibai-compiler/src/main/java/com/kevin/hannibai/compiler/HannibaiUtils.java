@@ -20,7 +20,9 @@ import com.kevin.hannibai.annotation.DefFloat;
 import com.kevin.hannibai.annotation.DefInt;
 import com.kevin.hannibai.annotation.DefLong;
 import com.kevin.hannibai.annotation.DefString;
+import com.kevin.hannibai.annotation.Expire;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 
 import javax.lang.model.element.Element;
 
@@ -101,6 +103,63 @@ final class HannibaiUtils {
             return defFloat == null ? 0 + "F" : defFloat.value() + "F";
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Get the expire AnnotationSpec
+     *
+     * @param element
+     * @return
+     */
+    static AnnotationSpec getExpireAnnotation(Element element) {
+        long value;
+        boolean update;
+        Expire.Unit unit;
+        Expire expire = element.getAnnotation(Expire.class);
+        if (expire != null) {
+            value = expire.value();
+            update = expire.update();
+            unit = expire.unit();
+        } else {
+            value = 1L;
+            update = false;
+            unit = Expire.Unit.FOREVER;
+        }
+        return AnnotationSpec.builder(Expire.class)
+                .addMember("value", "$LL", value)
+                .addMember("update", "$L", update)
+                .addMember("unit", "$T.$L", ClassName.get("com.kevin.hannibai.annotation.Expire", "Unit"), unit)
+                .build();
+    }
+
+    /**
+     * Get the expire time
+     *
+     * @param element
+     * @return
+     */
+    static String getExpireValue(Element element) {
+        Expire expire = element.getAnnotation(Expire.class);
+        if (expire != null) {
+            return String.format("%dL * %s", expire.value(), expire.unit().getValue());
+        } else {
+            return "1L * -1";
+        }
+    }
+
+    /**
+     * Whether update the expire time
+     *
+     * @param element
+     * @return
+     */
+    static boolean getExpireUpdate(Element element) {
+        Expire expire = element.getAnnotation(Expire.class);
+        if (expire != null) {
+            return expire.update();
+        } else {
+            return false;
         }
     }
 }

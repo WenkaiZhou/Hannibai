@@ -21,6 +21,7 @@ import com.kevin.hannibai.annotation.DefFloat;
 import com.kevin.hannibai.annotation.DefInt;
 import com.kevin.hannibai.annotation.DefLong;
 import com.kevin.hannibai.annotation.DefString;
+import com.kevin.hannibai.annotation.Expire;
 import com.kevin.hannibai.annotation.SharePreference;
 import com.kevin.hannibai.sample.bean.User;
 
@@ -32,10 +33,12 @@ import com.kevin.hannibai.sample.bean.User;
 public class SamplePreference {
     @DefString("zwenkai")
     @Commit
+    @Expire(value = 20L, unit = Expire.Unit.SECONDS)
     public String userName;
     @DefInt(18)
     public int age;
     @DefBoolean(true)
+    @Expire(value = 1000000000000000000L, unit = Expire.Unit.DAYS)
     public boolean isGood;
     @DefLong(123456789)
     public long time;
