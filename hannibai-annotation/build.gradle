@@ -2,3 +2,33 @@ apply plugin: 'java'
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+
+//jar {
+//    baseName "hannibai-annotation-${VERSION_NAME}"
+//    from {
+//        configurations.compileOnly.collect {
+//            if (it.name.startsWith("hannibai-annotation")) {
+//                it.isDirectory() ? it : zipTree(it)
+//            } else if (it.name.startsWith("javapoet")) {
+//                it.isDirectory() ? it : zipTree(it).matching {
+//                    include 'com/**'
+//                }
+//            } else {
+//                // The empty directory
+//                project.files()
+//            }
+//        }
+//    }
+//}
+
+setProperty "POM_ARTIFACT_ID", "hannibai-annotation"
+setProperty "PROJECT_NAME", "Hannibai-annotation"
+setProperty "POM_PACKAGING", "jar"
+//setProperty "VERSION_CODE", "1"
+//setProperty "VERSION_NAME", "0.1.0"
+
+ext {
+    kevinSourceDocFiles = [rootProject.file('gradle/java-sources-docs.gradle')]
+}
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
