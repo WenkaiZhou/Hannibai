@@ -32,7 +32,9 @@ final class BaseModel<T> {
         this.createTime = System.currentTimeMillis();
         this.updateTime = createTime;
         this.expire = expire;
-        this.expireTime = createTime + expire;
+        if (expire > 0) {
+            this.expireTime = createTime + expire;
+        }
     }
 
     public void update(T data, boolean update) {
@@ -40,6 +42,14 @@ final class BaseModel<T> {
         this.updateTime = System.currentTimeMillis();
         if (update) {
             this.expireTime = updateTime + expire;
+        }
+    }
+
+    public boolean isExpired() {
+        if (this.expire == -1) {
+            return false;
+        } else {
+            return System.currentTimeMillis() > this.expireTime;
         }
     }
 

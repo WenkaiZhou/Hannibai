@@ -24,6 +24,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -62,84 +63,63 @@ class HandleGenerator extends ElementGenerator {
             if (enclosedElement.getKind() == ElementKind.FIELD) {
                 String formatName = Utils.capitalize(enclosedElement.getSimpleName());
 
-                AnnotationSpec defValueAnnotation = HannibaiUtils.createDefValueAnnotation(enclosedElement,
-                        enclosedElement.asType().toString());
+                Iterable<AnnotationSpec> defValueAnnotation = HannibaiUtils.createDefValueAnnotation(
+                        enclosedElement, enclosedElement.asType().toString());
 
-                boolean isCommit = enclosedElement.getAnnotation(Commit.class) == null;
-
-                AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
+                TypeName returnType;
+                AnnotationSpec submitAnnotation;
+                if (enclosedElement.getAnnotation(Commit.class) == null) {
+                    submitAnnotation = AnnotationSpec.builder(Apply.class).build();
+                    returnType = TypeName.VOID;
+                } else {
+                    submitAnnotation = AnnotationSpec.builder(Commit.class).build();
+                    returnType = TypeName.BOOLEAN;
+                }
 
                 // The get method
                 methodSpecs.add(
-                        defValueAnnotation == null ?
-                                MethodSpec.methodBuilder(GET + formatName)
-                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                        .returns(ClassName.get(enclosedElement.asType()))
-                                        .addAnnotation(expireAnnotation)
-                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .build()
-                                :
-                                MethodSpec.methodBuilder(GET + formatName)
-                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                        .returns(ClassName.get(enclosedElement.asType()))
-                                        .addAnnotation(defValueAnnotation)
-                                        .addAnnotation(expireAnnotation)
-                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .build()
+                        MethodSpec.methodBuilder(GET + formatName)
+                                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                .returns(ClassName.get(enclosedElement.asType()))
+                                .addAnnotations(defValueAnnotation)
+                                .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                                        enclosedElement.getSimpleName())
+                                )
+                                .build()
                 );
+
+                HashSet<AnnotationSpec> setMethodAnnotations = new LinkedHashSet<>();
+                setMethodAnnotations.add(submitAnnotation);
+                AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
+                if (expireAnnotation != null) {
+                    setMethodAnnotations.add(expireAnnotation);
+                }
 
                 // The set method
                 methodSpecs.add(
-                        isCommit ?
-                                MethodSpec.methodBuilder(SET + formatName)
-                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                        .addParameter(ClassName.get(enclosedElement.asType()),
-                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                        .returns(TypeName.VOID)
-                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
-                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName(),
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .build()
-                                :
-                                MethodSpec.methodBuilder(SET + formatName)
-                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                        .addParameter(ClassName.get(enclosedElement.asType()),
-                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                        .returns(TypeName.BOOLEAN)
-                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
-                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName(),
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .build()
+                        MethodSpec.methodBuilder(SET + formatName)
+                                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                .addParameter(ClassName.get(enclosedElement.asType()),
+                                        enclosedElement.getSimpleName().toString(), Modifier.FINAL)
+                                .addAnnotations(setMethodAnnotations)
+                                .returns(returnType)
+                                .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
+                                        enclosedElement.getSimpleName(),
+                                        enclosedElement.getSimpleName())
+                                )
+                                .build()
                 );
 
                 // The remove method
                 methodSpecs.add(
-                        isCommit ?
-                                MethodSpec.methodBuilder(REMOVE + formatName)
-                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                        .returns(TypeName.VOID)
-                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
-                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .build()
-                                :
-                                MethodSpec.methodBuilder(REMOVE + formatName)
-                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                        .returns(TypeName.BOOLEAN)
-                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
-                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .build()
+                        MethodSpec.methodBuilder(REMOVE + formatName)
+                                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                .returns(returnType)
+                                .addAnnotation(submitAnnotation)
+                                .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
+                                        enclosedElement.getSimpleName())
+                                )
+                                .build()
                 );
             }
         }

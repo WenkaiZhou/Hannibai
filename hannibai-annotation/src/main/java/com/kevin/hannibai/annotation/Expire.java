@@ -26,8 +26,7 @@ public @interface Expire {
         SECONDS("1000"),
         MINUTES("60 * 1000"),
         HOURS("60 * 60 * 1000"),
-        DAYS("24 * 60 * 60 * 1000"),
-        FOREVER("-1");
+        DAYS("24 * 60 * 60 * 1000");
 
         private final String value;
 

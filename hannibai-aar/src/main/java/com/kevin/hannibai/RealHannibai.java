@@ -94,7 +94,7 @@ final class RealHannibai {
             BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
             if (Hannibai.debug)
                 Log.d(TAG, String.format("Value of %s is %s, create at %s, update at %s.", key, model.data, model.createTime, model.updateTime));
-            if (System.currentTimeMillis() > model.expireTime) {
+            if (model.isExpired()) {
                 if (Hannibai.debug)
                     Log.d(TAG, String.format("Value of %s is %s expired.", key, model.data));
                 return defValue;
@@ -120,7 +120,7 @@ final class RealHannibai {
         String value = sharedPreferences.getString(key, null);
         if (value != null && value.length() != 0) {
             model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
-            if (System.currentTimeMillis() > model.expireTime) {
+            if (model.isExpired()) {
                 model = new BaseModel<>(newValue, expire);
                 if (Hannibai.debug)
                     Log.d(TAG, String.format("Value of %s is %s expired.", key, model.data));

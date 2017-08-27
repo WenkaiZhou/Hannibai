@@ -80,48 +80,47 @@ public class HandleImplGenerator extends ElementGenerator {
             if (enclosedElement.getKind() == ElementKind.FIELD) {
                 String formatName = Utils.capitalize(enclosedElement.getSimpleName());
 
-                AnnotationSpec annotationSpec = HannibaiUtils.createDefValueAnnotation(enclosedElement,
-                        enclosedElement.asType().toString());
+                Iterable<AnnotationSpec> defValueAnnotation = HannibaiUtils.createDefValueAnnotation(
+                        enclosedElement, enclosedElement.asType().toString());
+
+                TypeName returnType;
+                AnnotationSpec submitAnnotation;
+                if (enclosedElement.getAnnotation(Commit.class) == null) {
+                    submitAnnotation = AnnotationSpec.builder(Apply.class).build();
+                    returnType = TypeName.VOID;
+                } else {
+                    submitAnnotation = AnnotationSpec.builder(Commit.class).build();
+                    returnType = TypeName.BOOLEAN;
+                }
 
                 Object defValue = HannibaiUtils.getDefValue(enclosedElement, enclosedElement.asType().toString());
-
-                AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
-
                 String expireValue = HannibaiUtils.getExpireValue(enclosedElement);
                 boolean expireUpdate = HannibaiUtils.getExpireUpdate(enclosedElement);
 
                 // The get method
                 methodSpecs.add(
-                        annotationSpec == null ?
-                                MethodSpec.methodBuilder(GET + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(ClassName.get(enclosedElement.asType()))
-                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("return $T.get($N, $L, $S, $L)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName(),
-                                                defValue)
-                                        .build()
-                                :
-                                MethodSpec.methodBuilder(GET + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(ClassName.get(enclosedElement.asType()))
-                                        .addAnnotation(annotationSpec)
-                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("return $T.get($N, $L, $S, $L)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName(),
-                                                defValue)
-                                        .build()
+                        MethodSpec.methodBuilder(GET + formatName)
+                                .addModifiers(Modifier.PUBLIC)
+                                .returns(ClassName.get(enclosedElement.asType()))
+                                .addAnnotations(defValueAnnotation)
+                                .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                                        enclosedElement.getSimpleName())
+                                )
+                                .addStatement("return $T.get($N, $L, $S, $L)",
+                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                        "mSharedPreferencesName",
+                                        "mId",
+                                        enclosedElement.getSimpleName(),
+                                        defValue)
+                                .build()
                 );
+
+                HashSet<AnnotationSpec> setMethodAnnotations = new LinkedHashSet<>();
+                setMethodAnnotations.add(submitAnnotation);
+                AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
+                if (expireAnnotation != null) {
+                    setMethodAnnotations.add(expireAnnotation);
+                }
 
                 // The set method
                 methodSpecs.add(
@@ -130,9 +129,8 @@ public class HandleImplGenerator extends ElementGenerator {
                                         .addModifiers(Modifier.PUBLIC)
                                         .addParameter(ClassName.get(enclosedElement.asType()),
                                                 enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                        .returns(TypeName.VOID)
-                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
-                                        .addAnnotation(expireAnnotation)
+                                        .returns(returnType)
+                                        .addAnnotations(setMethodAnnotations)
                                         .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName(),
                                                 enclosedElement.getSimpleName())
@@ -151,9 +149,8 @@ public class HandleImplGenerator extends ElementGenerator {
                                         .addModifiers(Modifier.PUBLIC)
                                         .addParameter(ClassName.get(enclosedElement.asType()),
                                                 enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                        .returns(TypeName.BOOLEAN)
-                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
-                                        .addAnnotation(expireAnnotation)
+                                        .returns(returnType)
+                                        .addAnnotations(setMethodAnnotations)
                                         .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName(),
                                                 enclosedElement.getSimpleName())
@@ -174,8 +171,8 @@ public class HandleImplGenerator extends ElementGenerator {
                         enclosedElement.getAnnotation(Commit.class) == null ?
                                 MethodSpec.methodBuilder(REMOVE + formatName)
                                         .addModifiers(Modifier.PUBLIC)
-                                        .returns(TypeName.VOID)
-                                        .addAnnotation(AnnotationSpec.builder(Apply.class).build())
+                                        .returns(returnType)
+                                        .addAnnotation(submitAnnotation)
                                         .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
                                         )
@@ -188,8 +185,8 @@ public class HandleImplGenerator extends ElementGenerator {
                                 :
                                 MethodSpec.methodBuilder(REMOVE + formatName)
                                         .addModifiers(Modifier.PUBLIC)
-                                        .returns(TypeName.BOOLEAN)
-                                        .addAnnotation(AnnotationSpec.builder(Commit.class).build())
+                                        .returns(returnType)
+                                        .addAnnotation(submitAnnotation)
                                         .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
                                         )
