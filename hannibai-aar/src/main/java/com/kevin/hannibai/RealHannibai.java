@@ -87,16 +87,20 @@ final class RealHannibai {
         String value = getSharedPreferences(name, id).getString(key, null);
         if (value == null || value.length() == 0) {
             if (Hannibai.debug)
-                Log.d(TAG, String.format("Value of %s is empty, returns the default %s.", key, defValue));
+                Log.d(TAG, String.format("Value of %s is empty, return the default %s.", key, defValue));
             return defValue;
         } else {
             ParameterizedType type = type(BaseModel.class, defValue.getClass());
             BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
-            if (Hannibai.debug)
+            if (Hannibai.debug) {
                 Log.d(TAG, String.format("Value of %s is %s, create at %s, update at %s.", key, model.data, model.createTime, model.updateTime));
+                if (!model.isExpired()) {
+                    Log.d(TAG, String.format("Value of %s is %s, Will expire after %s seconds.", key, model.data, (model.expireTime.getTime() - System.currentTimeMillis()) / 1000));
+                }
+            }
             if (model.isExpired()) {
                 if (Hannibai.debug)
-                    Log.d(TAG, String.format("Value of %s is %s expired.", key, model.data));
+                    Log.d(TAG, String.format("Value of %s is %s expired, return the default %s.", key, model.data, defValue));
                 return defValue;
             } else {
                 return model.data;
@@ -123,7 +127,7 @@ final class RealHannibai {
             if (model.isExpired()) {
                 model = new BaseModel<>(newValue, expire);
                 if (Hannibai.debug)
-                    Log.d(TAG, String.format("Value of %s is %s expired.", key, model.data));
+                    Log.d(TAG, String.format("Value of %s is %s expired", key, model.data));
             } else {
                 model.update(newValue, updateExpire);
             }
