@@ -31,6 +31,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor project(':hannibai-compiler')
-    compile project(':hannibai')
+//    compile project(':hannibai')
+    compile 'com.kevin:hannibai:0.1.5'
     compile 'com.google.code.gson:gson:2.2.4'
 }
