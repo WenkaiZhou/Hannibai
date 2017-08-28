@@ -4,7 +4,8 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 dependencies {
-    compile project(':hannibai-annotation')
+//    compile project(':hannibai-annotation')
+    compile "com.kevin:hannibai-annotation:${VERSION_NAME}"
     // create java file
     compile 'com.squareup:javapoet:1.9.0'
     // create META-INFO

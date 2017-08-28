@@ -31,4 +31,4 @@ setProperty "POM_PACKAGING", "jar"
 ext {
     kevinSourceDocFiles = [rootProject.file('gradle/java-sources-docs.gradle')]
 }
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
