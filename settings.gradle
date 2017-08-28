@@ -1,1 +1,1 @@
-include ':hannibai-compiler', ':hannibai-annotation', ':sample', ':hannibai-aar'
+include ':hannibai-compiler', ':hannibai-annotation', ':sample', ':hannibai'
