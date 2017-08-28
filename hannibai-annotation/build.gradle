@@ -4,24 +4,6 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 
-//jar {
-//    baseName "hannibai-annotation-${VERSION_NAME}"
-//    from {
-//        configurations.compileOnly.collect {
-//            if (it.name.startsWith("hannibai-annotation")) {
-//                it.isDirectory() ? it : zipTree(it)
-//            } else if (it.name.startsWith("javapoet")) {
-//                it.isDirectory() ? it : zipTree(it).matching {
-//                    include 'com/**'
-//                }
-//            } else {
-//                // The empty directory
-//                project.files()
-//            }
-//        }
-//    }
-//}
-
 setProperty "POM_ARTIFACT_ID", "hannibai-annotation"
 setProperty "PROJECT_NAME", "Hannibai-annotation"
 setProperty "POM_PACKAGING", "jar"
