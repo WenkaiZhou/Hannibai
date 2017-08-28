@@ -29,3 +29,15 @@ dependencies {
 //    compile project(':hannibai-annotation')
     compile "com.kevin:hannibai-annotation:${VERSION_NAME}"
 }
+
+// ------
+setProperty "POM_ARTIFACT_ID", "hannibai"
+setProperty "PROJECT_NAME", "Hannibai"
+setProperty "POM_PACKAGING", "aar"
+setProperty "VERSION_CODE", "1"
+setProperty "VERSION_NAME", "0.1.0"
+
+ext {
+    kevinSourceDocFiles = [rootProject.file('gradle/android-sources-docs.gradle')]
+}
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
