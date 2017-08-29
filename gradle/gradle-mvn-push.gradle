@@ -43,6 +43,7 @@ install {
                 artifactId POM_ARTIFACT_ID
                 version VERSION_NAME
                 packaging POM_PACKAGING
+                description POM_DESCRIPTION
                 url PROJECT_URL
                 licenses {
                     license {
