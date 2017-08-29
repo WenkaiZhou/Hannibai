@@ -18,6 +18,7 @@ package com.kevin.hannibai.sample;
 import android.app.Application;
 
 import com.kevin.hannibai.Hannibai;
+import com.kevin.hannibai.converter.gson.GsonConverterFactory;
 
 /**
  * Created by zhouwenkai on 2017/8/14.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kevin.hannibai.sample;
+package com.kevin.hannibai.converter.gson;
 
 import com.google.gson.Gson;
 import com.kevin.hannibai.Converter;
@@ -21,17 +21,24 @@ import com.kevin.hannibai.Converter;
 import java.lang.reflect.Type;
 
 /**
- * Created by zhouwenkai on 2017/8/14.
+ * Created by zhouwenkai on 2017/8/29.
  */
 
 public class GsonConverterFactory implements Converter.Factory {
 
-    private GsonConverterFactory() {
-
+    public static GsonConverterFactory create() {
+        return create(new Gson());
     }
 
-    public static GsonConverterFactory create() {
-        return new GsonConverterFactory();
+    public static GsonConverterFactory create(Gson gson) {
+        if (gson == null) throw new NullPointerException("gson == null");
+        return new GsonConverterFactory(gson);
+    }
+
+    private final Gson gson;
+
+    private GsonConverterFactory(Gson gson) {
+        this.gson = gson;
     }
 
     @Override
@@ -39,7 +46,7 @@ public class GsonConverterFactory implements Converter.Factory {
         return new Converter<F, String>() {
             @Override
             public String convert(F value) {
-                return new Gson().toJson(value);
+                return gson.toJson(value);
             }
         };
     }
@@ -49,7 +56,7 @@ public class GsonConverterFactory implements Converter.Factory {
         return new Converter<String, T>() {
             @Override
             public T convert(String value) {
-                return new Gson().fromJson(value, toType);
+                return gson.fromJson(value, toType);
             }
         };
     }
