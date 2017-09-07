@@ -4,11 +4,16 @@
 
 ## 在项目中使用[Hannibai](https://github.com/xuehuayous/Hannibal) 
 
-如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加下面一行到 `dependencies` :
+1. 如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加下面两行行到 `dependencies` :
 
 ```
-compile 'com.kevin:hannibai:0.1.5'
-annotationProcessor 'com.kevin:hannibai-compiler:0.1.5'
+compile 'com.kevin:hannibai:0.2.0'
+annotationProcessor 'com.kevin:hannibai-compiler:0.2.0'
+```
+
+2. 引入JSON序列化
+```
+compile 'com.kevin:hannibai-converter-gson:0.2.0'
 ```
 
 ## 简单使用
@@ -21,6 +26,7 @@ Hannibai.init(this);
 if (debug) {
     Hannibai.setDebug(true);
 }
+Hannibai.setConverterFactory(GsonConverterFactory.create());
 ```
 
 2. 创建一个类，使用`SharePreference`进行注解。
@@ -74,4 +80,4 @@ testPreference.removeUserName();
 
 ## 进阶使用
 
-未完待续，先睡了
+未完待续。。。

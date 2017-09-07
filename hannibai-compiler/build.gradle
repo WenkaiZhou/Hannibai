@@ -4,8 +4,8 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 dependencies {
-    compile project(':hannibai-annotation')
-//    compile "com.kevin:hannibai-annotation:${VERSION_NAME}"
+//    compile project(':hannibai-annotation')
+    compile "com.kevin:hannibai-annotation:${VERSION_NAME}"
 //    compile 'com.kevin.hannibai:annotation:0.1.7'
     // create java file
     compile 'com.squareup:javapoet:1.9.0'
@@ -16,8 +16,8 @@ dependencies {
 setProperty "POM_ARTIFACT_ID", "compiler"
 setProperty "PROJECT_NAME", "Hannibai-compiler"
 setProperty "POM_PACKAGING", "jar"
-setProperty "VERSION_CODE", "5"
-setProperty "VERSION_NAME", "0.1.7"
+//setProperty "VERSION_CODE", "5"
+//setProperty "VERSION_NAME", "0.1.7"
 
 ext {
     kevinSourceDocFiles = [rootProject.file('gradle/java-sources-docs.gradle')]
