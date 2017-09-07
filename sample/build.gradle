@@ -32,7 +32,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     annotationProcessor project(':hannibai-compiler')
     //    compile project(':hannibai')
-    compile 'com.kevin:hannibai:0.1.5'
+    compile project(':hannibai-annotation')
+//    compile 'com.kevin.hannibai:annotation:0.1.7'
     compile 'com.google.code.gson:gson:2.2.4'
     compile project(':hannibai-converters:hannibai-converter-gson')
 }

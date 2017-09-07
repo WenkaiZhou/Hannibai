@@ -4,11 +4,11 @@ sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
 
-setProperty "POM_ARTIFACT_ID", "annotation"
+setProperty "POM_ARTIFACT_ID", "hannibai-annotation"
 setProperty "PROJECT_NAME", "Hannibai-annotation"
 setProperty "POM_PACKAGING", "jar"
-setProperty "VERSION_CODE", "5"
-setProperty "VERSION_NAME", "0.1.7"
+//setProperty "VERSION_CODE", "8"
+//setProperty "VERSION_NAME", "0.2.0"
 
 setProperty "POM_DESCRIPTION", "Hannibai annotation"
 

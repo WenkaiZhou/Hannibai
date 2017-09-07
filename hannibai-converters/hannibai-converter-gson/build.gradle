@@ -28,7 +28,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     provided 'com.google.code.gson:gson:2.2.4'
-    provided "com.kevin:hannibai:${VERSION_NAME}"
+    provided project(':hannibai-annotation')
+//    provided "com.kevin:hannibai:${VERSION_NAME}"
 }
 
 setProperty "POM_ARTIFACT_ID", "hannibai-converter-gson"
@@ -42,4 +43,4 @@ setProperty "POM_DESCRIPTION", "Hannibai gson converter"
 ext {
     kevinSourceDocFiles = [rootProject.file('gradle/android-sources-docs.gradle')]
 }
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
