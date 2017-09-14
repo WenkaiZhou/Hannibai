@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -93,7 +94,30 @@ final class RealHannibai {
             return defValue;
         } else {
             ParameterizedType type = type(BaseModel.class, defValue.getClass());
-            BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
+            BaseModel<T> model = null;
+            try {
+                model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
+            } catch (IOException e) {
+                if (Hannibai.debug) {
+                    if (mEncrypt) {
+                        Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
+                    } else {
+                        Log.e(TAG, "Convert JSON to Model failed，will use encrypted retry again.");
+                    }
+                }
+                e.printStackTrace();
+                try {
+                    model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? value : Utils.endecode(value));
+                } catch (IOException e1) {
+                    Log.e(TAG, String.format("Convert JSON to Model complete failure, will return the default %s.", defValue));
+                    e1.printStackTrace();
+                }
+            }
+
+            if (null == model) {
+                return defValue;
+            }
+
             if (Hannibai.debug) {
                 Log.d(TAG, String.format("Value of %s is %s, create at %s, update at %s.", key, model.data, model.createTime, model.updateTime));
                 if (!model.isExpired()) {
@@ -116,27 +140,61 @@ final class RealHannibai {
     }
 
     final <T> void set1(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
-        set(name, id, key, expire, updateExpire, newValue).apply();
+        try {
+            set(name, id, key, expire, updateExpire, newValue).apply();
+        } catch (IOException e) {
+            if (Hannibai.debug) {
+                Log.e(TAG, "Convert Model to JSON failed.");
+            }
+            e.printStackTrace();
+        }
     }
 
     final <T> boolean set2(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
-        return set(name, id, key, expire, updateExpire, newValue).commit();
+        try {
+            return set(name, id, key, expire, updateExpire, newValue).commit();
+        } catch (IOException e) {
+            if (Hannibai.debug) {
+                Log.e(TAG, "Convert Model to JSON failed.");
+            }
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    private final <T> SharedPreferences.Editor set(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
+    private final <T> SharedPreferences.Editor set(String name, String id, String key, long expire, boolean updateExpire, T newValue) throws IOException {
         if (Hannibai.debug) Log.d(TAG, String.format("Set the %s value to the preferences.", key));
-        BaseModel<T> model;
+        BaseModel<T> model = null;
         ParameterizedType type = type(BaseModel.class, newValue.getClass());
         SharedPreferences sharedPreferences = getSharedPreferences(name, id);
         String value = sharedPreferences.getString(key, null);
         if (value != null && value.length() != 0) {
-            model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
-            if (model.isExpired()) {
+            try {
+                model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
+            } catch (Exception e) {
+                if (Hannibai.debug) {
+                    if (mEncrypt) {
+                        Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
+                    } else {
+                        Log.e(TAG, "Convert JSON to Model failed，will use encrypted retry again.");
+                    }
+                }
+                try {
+                    model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? value : Utils.endecode(value));
+                } catch (Exception e1) {
+                    Log.e(TAG, "Convert JSON to Model complete failure.");
+                }
+            }
+            if (null == model) {
                 model = new BaseModel<>(newValue, expire);
-                if (Hannibai.debug)
-                    Log.d(TAG, String.format("Value of %s is %s expired", key, model.data));
             } else {
-                model.update(newValue, updateExpire);
+                if (model.isExpired()) {
+                    model = new BaseModel<>(newValue, expire);
+                    if (Hannibai.debug)
+                        Log.d(TAG, String.format("Value of %s is %s expired", key, model.data));
+                } else {
+                    model.update(newValue, updateExpire);
+                }
             }
         } else {
             model = new BaseModel<>(newValue, expire);

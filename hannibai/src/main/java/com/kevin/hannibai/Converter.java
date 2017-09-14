@@ -15,6 +15,7 @@
  */
 package com.kevin.hannibai;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 /**
@@ -23,7 +24,7 @@ import java.lang.reflect.Type;
 
 public interface Converter<F, T> {
 
-    T convert(F value);
+    T convert(F value) throws IOException;
 
     interface Factory {
         <F> Converter<F, String> fromType(Type fromType);
