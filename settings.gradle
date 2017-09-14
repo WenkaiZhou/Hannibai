@@ -1,1 +1,1 @@
-include ':hannibai-compiler', ':hannibai-annotation', ':sample', ':hannibai', ':hannibai-converters:hannibai-converter-gson'
+include ':hannibai-compiler', ':hannibai-annotation', ':sample', ':hannibai', ':hannibai-converters:hannibai-converter-gson', ':hannibai-converters:hannibai-converter-logansquare'
