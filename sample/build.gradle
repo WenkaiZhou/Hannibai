@@ -30,11 +30,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    annotationProcessor project(':hannibai-compiler')
-    //    compile project(':hannibai')
+
     compile project(':hannibai-annotation')
-    //    compile 'com.kevin.hannibai:annotation:0.1.7'
-    compile 'com.google.code.gson:gson:2.2.4'
-    compile project(':hannibai-converters:hannibai-converter-gson')
+
     compile project(':hannibai')
+    annotationProcessor project(':hannibai-compiler')
+    compile project(':hannibai-converters:hannibai-converter-gson')
+    compile 'com.google.code.gson:gson:2.2.4'
 }

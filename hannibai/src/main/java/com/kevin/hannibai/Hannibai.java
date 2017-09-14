@@ -26,7 +26,11 @@ public final class Hannibai {
     static boolean debug = false;
 
     public static final void init(Context context) {
-        RealHannibai.getInstance().init(context);
+        RealHannibai.getInstance().init(context, true);
+    }
+
+    public static final void init(Context context, boolean encrypt) {
+        RealHannibai.getInstance().init(context, encrypt);
     }
 
     /**

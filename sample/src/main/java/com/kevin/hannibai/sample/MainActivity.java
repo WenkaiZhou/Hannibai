@@ -15,17 +15,15 @@
  */
 package com.kevin.hannibai.sample;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.kevin.hannibai.Hannibai;
 
-import java.util.concurrent.TimeUnit;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private EditText mEtUserName;
 
@@ -34,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEtUserName = (EditText) this.findViewById(R.id.et_name);
+
+
+        SamplePreferenceHandle samplePreferenceHandle = Hannibai.create(SamplePreferenceHandle.class);
+        samplePreferenceHandle.setUserName("周文凯");
+        String userName = samplePreferenceHandle.getUserName();
+        Toast.makeText(MainActivity.this, "userName = " + userName, Toast.LENGTH_SHORT).show();
     }
 
     public void click1(View view) {

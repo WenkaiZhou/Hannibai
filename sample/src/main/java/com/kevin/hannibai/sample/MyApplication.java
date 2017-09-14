@@ -28,7 +28,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Hannibai.init(this);
+        Hannibai.init(this, false);
         Hannibai.setDebug(true);
         Hannibai.setConverterFactory(GsonConverterFactory.create());
     }

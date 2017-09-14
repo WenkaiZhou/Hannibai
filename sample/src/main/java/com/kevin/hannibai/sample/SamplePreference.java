@@ -33,7 +33,6 @@ import com.kevin.hannibai.sample.bean.User;
 public class SamplePreference {
     @DefString("zwenkai")
     @Commit
-    @Expire(value = 20L, unit = Expire.Unit.SECONDS)
     public String userName;
     @DefInt(18)
     public int age;

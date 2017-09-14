@@ -33,6 +33,7 @@ final class RealHannibai {
     private static final String TAG = "RealHannibai";
 
     private Context mContext;
+    private boolean mEncrypt;
     private Converter.Factory converterFactory;
 
     private RealHannibai() {
@@ -46,8 +47,9 @@ final class RealHannibai {
         private static final RealHannibai INSTANCE = new RealHannibai();
     }
 
-    public void init(Context context) {
+    public void init(Context context, boolean encrypt) {
         this.mContext = context.getApplicationContext();
+        this.mEncrypt = encrypt;
     }
 
     final public <T> T create(final Class<T> preference) {
@@ -91,11 +93,16 @@ final class RealHannibai {
             return defValue;
         } else {
             ParameterizedType type = type(BaseModel.class, defValue.getClass());
-            BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
+            BaseModel<T> model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
             if (Hannibai.debug) {
                 Log.d(TAG, String.format("Value of %s is %s, create at %s, update at %s.", key, model.data, model.createTime, model.updateTime));
                 if (!model.isExpired()) {
-                    Log.d(TAG, String.format("Value of %s is %s, Will expire after %s seconds.", key, model.data, (model.expireTime.getTime() - System.currentTimeMillis()) / 1000));
+                    if (model.expire > 0) {
+                        Log.d(TAG, String.format("Value of %s is %s, Will expire after %s seconds.", key, model.data, (model.expireTime.getTime() - System.currentTimeMillis()) / 1000));
+                    } else {
+                        Log.d(TAG, String.format("Value of %s is %s.", key, model.data));
+                    }
+
                 }
             }
             if (model.isExpired()) {
@@ -123,7 +130,7 @@ final class RealHannibai {
         SharedPreferences sharedPreferences = getSharedPreferences(name, id);
         String value = sharedPreferences.getString(key, null);
         if (value != null && value.length() != 0) {
-            model = (BaseModel<T>) getConverterFactory().toType(type).convert(Utils.endecode(value));
+            model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
             if (model.isExpired()) {
                 model = new BaseModel<>(newValue, expire);
                 if (Hannibai.debug)
@@ -135,7 +142,7 @@ final class RealHannibai {
             model = new BaseModel<>(newValue, expire);
         }
         String modelJson = getConverterFactory().fromType(type).convert(model);
-        return sharedPreferences.edit().putString(key, Utils.endecode(modelJson));
+        return sharedPreferences.edit().putString(key, mEncrypt ? Utils.endecode(modelJson) : modelJson);
     }
 
     final void remove1(String name, String id, String key) {
