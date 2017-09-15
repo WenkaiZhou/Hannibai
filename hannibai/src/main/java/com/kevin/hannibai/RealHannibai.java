@@ -59,8 +59,8 @@ final class RealHannibai {
                     .getMethod("getInstance")
                     .invoke(null);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("出错了");
+            Log.e(TAG, "Something went wrong!");
+            throw new RuntimeException(e);
         }
     }
 
@@ -71,8 +71,8 @@ final class RealHannibai {
                     .getConstructor(String.class)
                     .newInstance(id);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("出错了");
+            Log.e(TAG, "Something went wrong!");
+            throw new RuntimeException(e);
         }
     }
 
@@ -97,19 +97,21 @@ final class RealHannibai {
             try {
                 model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
             } catch (Exception e) {
-                if (Hannibai.debug) {
-                    if (mEncrypt) {
-                        Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
-                    } else {
-                        Log.e(TAG, "Convert JSON to Model failed，will use encrypted retry again.");
-                    }
+                if (mEncrypt) {
+                    Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
+                } else {
+                    Log.e(TAG, "Convert JSON to Model failed，will use encrypted retry again.");
                 }
-                e.printStackTrace();
+                if (Hannibai.debug) {
+                    e.printStackTrace();
+                }
                 try {
                     model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? value : Utils.endecode(value));
                 } catch (Exception e1) {
                     Log.e(TAG, String.format("Convert JSON to Model complete failure, will return the default %s.", defValue));
-                    e1.printStackTrace();
+                    if (Hannibai.debug) {
+                        e1.printStackTrace();
+                    }
                 }
             }
 
@@ -142,10 +144,10 @@ final class RealHannibai {
         try {
             set(name, id, key, expire, updateExpire, newValue).apply();
         } catch (Exception e) {
+            Log.e(TAG, "Convert Model to JSON failed.");
             if (Hannibai.debug) {
-                Log.e(TAG, "Convert Model to JSON failed.");
+                e.printStackTrace();
             }
-            e.printStackTrace();
         }
     }
 
@@ -153,10 +155,10 @@ final class RealHannibai {
         try {
             return set(name, id, key, expire, updateExpire, newValue).commit();
         } catch (Exception e) {
+            Log.e(TAG, "Convert Model to JSON failed.");
             if (Hannibai.debug) {
-                Log.e(TAG, "Convert Model to JSON failed.");
+                e.printStackTrace();
             }
-            e.printStackTrace();
             return false;
         }
     }
@@ -171,17 +173,21 @@ final class RealHannibai {
             try {
                 model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
             } catch (Exception e) {
+                if (mEncrypt) {
+                    Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
+                } else {
+                    Log.e(TAG, "Convert JSON to Model failed，will use encrypted retry again.");
+                }
                 if (Hannibai.debug) {
-                    if (mEncrypt) {
-                        Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
-                    } else {
-                        Log.e(TAG, "Convert JSON to Model failed，will use encrypted retry again.");
-                    }
+                    e.printStackTrace();
                 }
                 try {
                     model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? value : Utils.endecode(value));
                 } catch (Exception e1) {
                     Log.e(TAG, "Convert JSON to Model complete failure.");
+                    if (Hannibai.debug) {
+                        e1.printStackTrace();
+                    }
                 }
             }
             if (null == model) {
