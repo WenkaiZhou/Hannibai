@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -97,7 +96,7 @@ final class RealHannibai {
             BaseModel<T> model = null;
             try {
                 model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 if (Hannibai.debug) {
                     if (mEncrypt) {
                         Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
@@ -108,7 +107,7 @@ final class RealHannibai {
                 e.printStackTrace();
                 try {
                     model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? value : Utils.endecode(value));
-                } catch (IOException e1) {
+                } catch (Exception e1) {
                     Log.e(TAG, String.format("Convert JSON to Model complete failure, will return the default %s.", defValue));
                     e1.printStackTrace();
                 }
@@ -142,7 +141,7 @@ final class RealHannibai {
     final <T> void set1(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
         try {
             set(name, id, key, expire, updateExpire, newValue).apply();
-        } catch (IOException e) {
+        } catch (Exception e) {
             if (Hannibai.debug) {
                 Log.e(TAG, "Convert Model to JSON failed.");
             }
@@ -153,7 +152,7 @@ final class RealHannibai {
     final <T> boolean set2(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
         try {
             return set(name, id, key, expire, updateExpire, newValue).commit();
-        } catch (IOException e) {
+        } catch (Exception e) {
             if (Hannibai.debug) {
                 Log.e(TAG, "Convert Model to JSON failed.");
             }
@@ -162,7 +161,7 @@ final class RealHannibai {
         }
     }
 
-    private final <T> SharedPreferences.Editor set(String name, String id, String key, long expire, boolean updateExpire, T newValue) throws IOException {
+    private final <T> SharedPreferences.Editor set(String name, String id, String key, long expire, boolean updateExpire, T newValue) throws Exception {
         if (Hannibai.debug) Log.d(TAG, String.format("Set the %s value to the preferences.", key));
         BaseModel<T> model = null;
         ParameterizedType type = type(BaseModel.class, newValue.getClass());
