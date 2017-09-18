@@ -45,7 +45,7 @@ public class GsonConverterFactory implements Converter.Factory {
     public <F> Converter<F, String> fromType(Type fromType) {
         return new Converter<F, String>() {
             @Override
-            public String convert(F value) {
+            public String convert(F value) throws Exception {
                 return gson.toJson(value);
             }
         };
@@ -55,7 +55,7 @@ public class GsonConverterFactory implements Converter.Factory {
     public <T> Converter<String, T> toType(final Type toType) {
         return new Converter<String, T>() {
             @Override
-            public T convert(String value) {
+            public T convert(String value) throws Exception {
                 return gson.fromJson(value, toType);
             }
         };
