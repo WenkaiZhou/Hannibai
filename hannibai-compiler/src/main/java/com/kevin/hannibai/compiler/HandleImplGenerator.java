@@ -249,6 +249,7 @@ public class HandleImplGenerator extends ElementGenerator {
 
         return TypeSpec.classBuilder(className)
                 .addSuperinterface(ClassName.get(packageName, mSuperinterface))
+                .addSuperinterface(ClassName.get(Constants.PACKAGE_NAME, Constants.IHANDLE))
                 .addModifiers(Modifier.FINAL)
                 .addType(holder)
                 .addMethods(methodSpecs)

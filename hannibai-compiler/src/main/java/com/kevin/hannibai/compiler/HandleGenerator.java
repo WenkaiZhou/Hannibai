@@ -17,14 +17,12 @@ package com.kevin.hannibai.compiler;
 
 import com.kevin.hannibai.annotation.Apply;
 import com.kevin.hannibai.annotation.Commit;
-import com.kevin.hannibai.annotation.DefInt;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,8 +37,6 @@ import static com.kevin.hannibai.compiler.Constants.GET;
 import static com.kevin.hannibai.compiler.Constants.GET_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.PUT_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.REMOVE;
-import static com.kevin.hannibai.compiler.Constants.REMOVE_ALL;
-import static com.kevin.hannibai.compiler.Constants.REMOVE_ALL_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.REMOVE_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.SET;
 
