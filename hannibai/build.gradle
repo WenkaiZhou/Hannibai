@@ -34,10 +34,10 @@ dependencies {
 setProperty "POM_ARTIFACT_ID", "hannibai"
 setProperty "PROJECT_NAME", "Hannibai"
 setProperty "POM_PACKAGING", "aar"
-setProperty "VERSION_CODE", "11"
-setProperty "VERSION_NAME", "0.2.3"
+setProperty "VERSION_CODE", "14"
+setProperty "VERSION_NAME", "0.2.6"
 
 ext {
     kevinSourceDocFiles = [rootProject.file('gradle/android-sources-docs.gradle')]
 }
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
