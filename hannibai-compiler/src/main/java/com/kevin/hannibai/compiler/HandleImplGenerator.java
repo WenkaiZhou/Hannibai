@@ -200,7 +200,7 @@ public class HandleImplGenerator extends ElementGenerator {
             }
         }
 
-        if (methodSpecs.size() > 0) {
+//        if (methodSpecs.size() > 0) {
             // The deleteAll method
             MethodSpec methodDelete = MethodSpec.methodBuilder(REMOVE_ALL)
                     .addModifiers(Modifier.PUBLIC)
@@ -213,7 +213,7 @@ public class HandleImplGenerator extends ElementGenerator {
                             "mId")
                     .build();
             methodSpecs.add(methodDelete);
-        }
+//        }
 
         // Add constructor method
         methodSpecs.add(MethodSpec.constructorBuilder()

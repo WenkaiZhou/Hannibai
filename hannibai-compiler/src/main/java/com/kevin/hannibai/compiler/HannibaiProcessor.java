@@ -66,10 +66,14 @@ public class HannibaiProcessor extends AbstractProcessor {
             }
         }
 
-        for (TypeElement typeElement : typeElements) {
-            HandleGenerator handleGenerator = new HandleGenerator(typeElement, HANDLE_SUFFIX);
-            handleGenerator.generate();
-            new HandleImplGenerator(typeElement, HANDLE_IMPL_SUFFIX, handleGenerator.mClassName).generate();
+        if (typeElements.size() > 0) {
+            new IHandleGenerator().generate();
+
+            for (TypeElement typeElement : typeElements) {
+                HandleGenerator handleGenerator = new HandleGenerator(typeElement, HANDLE_SUFFIX);
+                handleGenerator.generate();
+                new HandleImplGenerator(typeElement, HANDLE_IMPL_SUFFIX, handleGenerator.mClassName).generate();
+            }
         }
 
         return true;

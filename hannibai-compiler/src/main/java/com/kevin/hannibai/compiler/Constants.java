@@ -31,6 +31,7 @@ public class Constants {
     public static final String DOT = ".";
     public static final String HANNIBAI = "Hannibai";
     public static final String REAL_HANNIBAI = "RealHannibai";
+    public static final String IHANDLE = "IHandle";
     public static final String HANDLE_SUFFIX = "Handle";
     public static final String HANDLE_IMPL_SUFFIX = "HandleImpl";
 

@@ -124,20 +124,10 @@ class HandleGenerator extends ElementGenerator {
             }
         }
 
-        if (methodSpecs.size() > 0) {
-            // The deleteAll method
-            MethodSpec methodDelete = MethodSpec.methodBuilder(REMOVE_ALL)
-                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                    .returns(TypeName.VOID)
-                    .addAnnotation(AnnotationSpec.builder(Apply.class).build())
-                    .addJavadoc(REMOVE_ALL_METHOD_JAVA_DOC)
-                    .build();
-            methodSpecs.add(methodDelete);
-        }
-
         return TypeSpec.interfaceBuilder(className)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethods(methodSpecs)
+                .addSuperinterface(ClassName.get(Constants.PACKAGE_NAME, Constants.IHANDLE))
                 .addJavadoc(CLASS_JAVA_DOC)
                 .build();
     }
