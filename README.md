@@ -7,13 +7,13 @@
 1. 如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加下面两行行到 `dependencies` :
 
 ```
-compile 'com.kevin:hannibai:0.2.0'
-annotationProcessor 'com.kevin:hannibai-compiler:0.2.0'
+compile 'com.kevin:hannibai:0.2.6'
+annotationProcessor 'com.kevin:hannibai-compiler:0.2.4'
 ```
 
 2. 引入JSON序列化
 ```
-compile 'com.kevin:hannibai-converter-gson:0.2.0'
+compile 'com.kevin:hannibai-converter-gson:0.2.6'
 ```
 
 ## 简单使用
@@ -81,3 +81,12 @@ testPreference.removeUserName();
 ## 进阶使用
 
 未完待续。。。
+
+# 混淆
+
+```
+-dontwarn com.kevin.hannibai.**
+-keep class com.kevin.hannibai.** { *; }
+-keep class * implements com.kevin.hannibai.IHandle { *; }
+-keep @com.kevin.hannibai.annotation.SharePreference class * { *; }
+```
