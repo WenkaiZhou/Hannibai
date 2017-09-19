@@ -34,8 +34,8 @@ dependencies {
 setProperty "POM_ARTIFACT_ID", "hannibai"
 setProperty "PROJECT_NAME", "Hannibai"
 setProperty "POM_PACKAGING", "aar"
-setProperty "VERSION_CODE", "14"
-setProperty "VERSION_NAME", "0.2.6"
+setProperty "VERSION_CODE", "15"
+setProperty "VERSION_NAME", "0.2.7"
 
 ext {
     kevinSourceDocFiles = [rootProject.file('gradle/android-sources-docs.gradle')]
