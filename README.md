@@ -169,6 +169,21 @@
 		public String userName;
 		```
 	
+4. 获取操作类
+
+	> 有两种方式，一种是获取通用的，另一种是可以传入ID参数，为不同用户建立不同`SharePreference`文件。
+
+	1. 通用
+	
+		```
+		testPreference = Hannibai.create(TestPreferenceHandle.class);
+		```
+	2. 区分用户
+	
+		```
+		testPreference = Hannibai.create(TestPreferenceHandle.class, "ID_123");
+		```
+	
 ## 更多
 
 > 请参考项目中示例
