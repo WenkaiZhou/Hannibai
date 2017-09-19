@@ -31,3 +31,16 @@ dependencies {
     provided 'com.fasterxml.jackson.core:jackson-core:2.9.1'
     provided 'com.fasterxml.jackson.core:jackson-databind:2.9.1'
 }
+
+setProperty "POM_ARTIFACT_ID", "hannibai-converter-jackson"
+setProperty "PROJECT_NAME", "Hannibai-converter-jackson"
+setProperty "POM_PACKAGING", "jar"
+setProperty "VERSION_CODE", "14"
+setProperty "VERSION_NAME", "0.2.6"
+
+setProperty "POM_DESCRIPTION", "Hannibai jackson converter"
+
+ext {
+    kevinSourceDocFiles = [rootProject.file('gradle/android-sources-docs.gradle')]
+}
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

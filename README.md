@@ -11,12 +11,23 @@
 	annotationProcessor 'com.kevin:hannibai-compiler:0.2.5'
 	```
 
-2. 如果使用Gson进行JSON转换，引入JSON序列化
+2. 引入JSON序列化
 
-	```
-	compile 'com.kevin:hannibai-converter-gson:0.2.6'
-	```
-3. 这里仅仅实现了GSON的实现，后续会扩展，或者你也可以仿照Gson扩展。
+	> 根据项目使用引入具体转换器
+	
+	1. Gson
+
+		```
+		compile 'com.kevin:hannibai-converter-gson:0.2.6'
+		```
+	
+	2. Jackson
+	
+		```
+		compile 'com.kevin:hannibai-converter-jackson:0.2.6'
+		```
+	
+3. 这里仅仅实现了Gson和Jackson的实现，后续会扩展，或者你也可以扩展。
 
 ## 简单使用
 
