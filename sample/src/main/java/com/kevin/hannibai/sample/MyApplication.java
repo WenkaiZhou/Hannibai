@@ -17,6 +17,7 @@ package com.kevin.hannibai.sample;
 
 import android.app.Application;
 
+import com.baidu.hannibai.converter.fastjson.FastJsonConverterFactory;
 import com.baidu.hannibai.converter.jackson.JacksonConverterFactory;
 import com.kevin.hannibai.Hannibai;
 import com.kevin.hannibai.converter.gson.GsonConverterFactory;
@@ -32,6 +33,7 @@ public class MyApplication extends Application {
         Hannibai.init(this, false);
         Hannibai.setDebug(true);
 //        Hannibai.setConverterFactory(GsonConverterFactory.create());
-        Hannibai.setConverterFactory(JacksonConverterFactory.create());
+//        Hannibai.setConverterFactory(JacksonConverterFactory.create());
+        Hannibai.setConverterFactory(FastJsonConverterFactory.create());
     }
 }

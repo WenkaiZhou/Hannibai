@@ -1,0 +1,47 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "26.0.0"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+
+    provided "com.kevin:hannibai-annotation:${VERSION_NAME}"
+    provided 'com.kevin:hannibai:0.2.4'
+    provided 'com.alibaba:fastjson:1.2.31'
+}
+
+setProperty "POM_ARTIFACT_ID", "hannibai-converter-fastjson"
+setProperty "PROJECT_NAME", "Hannibai-converter-fastjson"
+setProperty "POM_PACKAGING", "jar"
+setProperty "VERSION_CODE", "14"
+setProperty "VERSION_NAME", "0.2.6"
+
+setProperty "POM_DESCRIPTION", "Hannibai fastjson converter"
+
+ext {
+    kevinSourceDocFiles = [rootProject.file('gradle/android-sources-docs.gradle')]
+}
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

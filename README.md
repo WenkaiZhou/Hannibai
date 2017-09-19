@@ -26,8 +26,14 @@
 		```
 		compile 'com.kevin:hannibai-converter-jackson:0.2.6'
 		```
+		
+	3. FastJson
+    	
+        ```
+        compile 'com.kevin:hannibai-converter-fastjson:0.2.6'
+        ```
 	
-3. 这里仅仅实现了Gson和Jackson的实现，后续会扩展，或者你也可以扩展。
+3. 这里仅仅实现了Gson、Jackson及FastJson的实现，后续会扩展，或者你也可以扩展。
 
 ## 简单使用
 
