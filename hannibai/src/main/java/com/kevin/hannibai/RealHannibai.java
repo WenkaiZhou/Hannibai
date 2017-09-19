@@ -121,16 +121,16 @@ final class RealHannibai {
 
             if (Hannibai.debug) {
                 Log.d(TAG, String.format("Value of %s is %s, create at %s, update at %s.", key, model.data, model.createTime, model.updateTime));
-                if (!model.isExpired()) {
+                if (!model.dataExpired()) {
                     if (model.expire > 0) {
-                        Log.d(TAG, String.format("Value of %s is %s, Will expire after %s seconds.", key, model.data, (model.expireTime.getTime() - System.currentTimeMillis()) / 1000));
+                        Log.d(TAG, String.format("Value of %s is %s, Will expire after %s seconds.", key, model.data, (model.expireTime - System.currentTimeMillis()) / 1000));
                     } else {
                         Log.d(TAG, String.format("Value of %s is %s.", key, model.data));
                     }
 
                 }
             }
-            if (model.isExpired()) {
+            if (model.dataExpired()) {
                 if (Hannibai.debug)
                     Log.d(TAG, String.format("Value of %s is %s expired, return the default %s.", key, model.data, defValue));
                 return defValue;
@@ -193,7 +193,7 @@ final class RealHannibai {
             if (null == model) {
                 model = new BaseModel<>(newValue, expire);
             } else {
-                if (model.isExpired()) {
+                if (model.dataExpired()) {
                     model = new BaseModel<>(newValue, expire);
                     if (Hannibai.debug)
                         Log.d(TAG, String.format("Value of %s is %s expired", key, model.data));

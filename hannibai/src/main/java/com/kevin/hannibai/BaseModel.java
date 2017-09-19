@@ -15,45 +15,47 @@
  */
 package com.kevin.hannibai;
 
-import java.util.Date;
-
 /**
  * Created by zhouwenkai on 2017/8/14.
  */
 
 final class BaseModel<T> {
 
-    public Date createTime;
-    public Date updateTime;
-    public Date expireTime;
+    public long createTime;
+    public long updateTime;
+    public long expireTime;
     public long expire;
     public T data;
+
+    public BaseModel() {
+
+    }
 
     public BaseModel(T data, long expire) {
         this.data = data;
         long currentTime = System.currentTimeMillis();
-        this.createTime = new Date(currentTime);
-        this.updateTime = new Date(currentTime);
+        this.createTime = currentTime;
+        this.updateTime = currentTime;
         this.expire = expire;
         if (expire > 0) {
-            this.expireTime = new Date(currentTime + expire);
+            this.expireTime = currentTime + expire;
         }
     }
 
     public void update(T data, boolean update) {
         this.data = data;
         long currentTime = System.currentTimeMillis();
-        this.updateTime = new Date(currentTime);
+        this.updateTime = currentTime;
         if (update && expire > 0) {
-            this.expireTime = new Date(currentTime + expire);
+            this.expireTime = currentTime + expire;
         }
     }
 
-    public boolean isExpired() {
+    public boolean dataExpired() {
         if (this.expire == -1) {
             return false;
         } else {
-            return System.currentTimeMillis() > this.expireTime.getTime();
+            return System.currentTimeMillis() > this.expireTime;
         }
     }
 
