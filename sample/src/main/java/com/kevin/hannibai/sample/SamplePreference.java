@@ -23,7 +23,6 @@ import com.kevin.hannibai.annotation.DefLong;
 import com.kevin.hannibai.annotation.DefString;
 import com.kevin.hannibai.annotation.Expire;
 import com.kevin.hannibai.annotation.SharePreference;
-import com.kevin.hannibai.sample.bean.User;
 
 /**
  * Created by zhouwenkai on 2017/8/12.
@@ -59,5 +58,7 @@ public class SamplePreference {
     @DefFloat(123.45f)
     public Float prsice;
 
-    public User user;
+    public Employee employee1;
+
+    public Employee employee2;
 }

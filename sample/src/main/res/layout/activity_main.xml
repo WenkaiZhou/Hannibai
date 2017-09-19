@@ -1,37 +1,493 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kevin.hannibai.sample.MainActivity">
+    android:scrollbars="none">
 
-    <EditText
-        android:id="@+id/et_name"
-        android:hint="请输入姓名"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/btn_1"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="click1"
-        android:text="设置"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="8dp"
+        tools:context="com.baidu.testhannibai.MainActivity">
 
-    <Button
-        android:id="@+id/btn_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="click2"
-        android:text="获取"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_1" />
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_name_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:textStrokeColor="#B0120A"
+            app:textStrokeWidth="0.5dp"
+            tools:text="name:" />
 
-</android.support.constraint.ConstraintLayout>
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_name_title"
+            android:layout_width="77dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="name"
+            android:textColor="@android:color/white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_name_content"
+            app:textNormalSolidColor="#B0120A" />
+
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="95dp"
+            android:layout_height="wrap_content"
+            android:maxLength="10"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_name_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_name_title"
+            app:layout_constraintTop_toTopOf="@+id/tv_name_title" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_set_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onSetNameClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="SET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_name_title"
+            app:layout_constraintLeft_toRightOf="@+id/et_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_name_title"
+            app:textNormalSolidColor="#B0120A"
+            app:textPressedSolidColor="#E51C23"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_get_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onGetNameClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="GET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_name_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_set_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_name_title"
+            app:textNormalSolidColor="#B0120A"
+            app:textPressedSolidColor="#E51C23"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_remove_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onRemoveNameClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="REMOVE"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_name_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_get_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_name_title"
+            app:textNormalSolidColor="#B0120A"
+            app:textPressedSolidColor="#E51C23"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_age_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_name_title"
+            app:textStrokeColor="#880E4F"
+            app:textStrokeWidth="0.5dp"
+            tools:text="age:" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_age_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="age"
+            android:textColor="@android:color/white"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_name_title"
+            app:layout_constraintRight_toRightOf="@+id/tv_name_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_age_content"
+            app:textNormalSolidColor="#880E4F" />
+
+        <EditText
+            android:id="@+id/et_age"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:inputType="number"
+            android:maxLength="3"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_age_title"
+            app:layout_constraintLeft_toLeftOf="@+id/et_name"
+            app:layout_constraintLeft_toRightOf="@+id/tv_age_title"
+            app:layout_constraintRight_toRightOf="@+id/et_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_age_title"
+            app:layout_constraintVertical_bias="0.444" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_set_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onSetAgeClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="SET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_age_title"
+            app:layout_constraintLeft_toRightOf="@+id/et_age"
+            app:layout_constraintTop_toTopOf="@+id/tv_age_title"
+            app:textNormalSolidColor="#880E4F"
+            app:textPressedSolidColor="#E91E63"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_get_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onGetAgeClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="GET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_age_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_set_age"
+            app:layout_constraintTop_toTopOf="@+id/tv_age_title"
+            app:textNormalSolidColor="#880E4F"
+            app:textPressedSolidColor="#E91E63"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_remove_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onRemoveAgeClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="REMOVE"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_age_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_get_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_age_title"
+            app:textNormalSolidColor="#880E4F"
+            app:textPressedSolidColor="#E91E63"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_no_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_age_title"
+            app:textStrokeColor="#4A148C"
+            app:textStrokeWidth="0.5dp"
+            tools:text="NO.:" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_no_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="NO."
+            android:textColor="@android:color/white"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_name_title"
+            app:layout_constraintRight_toRightOf="@+id/tv_name_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_no_content"
+            app:textNormalSolidColor="#4A148C" />
+
+        <EditText
+            android:id="@+id/et_no"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="10"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_no_title"
+            app:layout_constraintLeft_toLeftOf="@+id/et_name"
+            app:layout_constraintLeft_toRightOf="@+id/tv_no_title"
+            app:layout_constraintRight_toRightOf="@+id/et_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_no_title" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_set_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onSetNoClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="SET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_no_title"
+            app:layout_constraintLeft_toRightOf="@+id/et_no"
+            app:layout_constraintTop_toTopOf="@+id/tv_no_title"
+            app:textNormalSolidColor="#4A148C"
+            app:textPressedSolidColor="#9C27B0"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_get_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onGetNoClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="GET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_no_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_set_no"
+            app:layout_constraintTop_toTopOf="@+id/tv_no_title"
+            app:textNormalSolidColor="#4A148C"
+            app:textPressedSolidColor="#9C27B0"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_remove_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onRemoveNoClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="REMOVE"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_no_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_get_no"
+            app:layout_constraintTop_toTopOf="@+id/tv_no_title"
+            app:textNormalSolidColor="#4A148C"
+            app:textPressedSolidColor="#9C27B0"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_salary_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_no_title"
+            app:textStrokeColor="#311B92"
+            app:textStrokeWidth="0.5dp"
+            tools:text="salary:" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_salary_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="salary"
+            android:textColor="@android:color/white"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_name_title"
+            app:layout_constraintRight_toRightOf="@+id/tv_name_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_salary_content"
+            app:textNormalSolidColor="#311B92" />
+
+        <EditText
+            android:id="@+id/et_salary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLength="10"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_salary_title"
+            app:layout_constraintLeft_toLeftOf="@+id/et_name"
+            app:layout_constraintLeft_toRightOf="@+id/tv_salary_title"
+            app:layout_constraintRight_toRightOf="@+id/et_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_salary_title" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_set_salary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onSetSalaryClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="SET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_salary_title"
+            app:layout_constraintLeft_toRightOf="@+id/et_salary"
+            app:layout_constraintTop_toTopOf="@+id/tv_salary_title"
+            app:textNormalSolidColor="#311B92"
+            app:textPressedSolidColor="#673AB7"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_get_salary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onGetSalaryClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="GET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_salary_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_set_salary"
+            app:layout_constraintTop_toTopOf="@+id/tv_salary_title"
+            app:textNormalSolidColor="#311B92"
+            app:textPressedSolidColor="#673AB7"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_remove_salary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onRemoveSalaryClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="REMOVE"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_salary_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_get_salary"
+            app:layout_constraintTop_toTopOf="@+id/tv_salary_title"
+            app:textNormalSolidColor="#4A148C"
+            app:textPressedSolidColor="#9C27B0"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_employee_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_salary_title"
+            app:textStrokeColor="#4A148C"
+            app:textStrokeWidth="0.5dp"
+            tools:text="sss" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_employee_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="employee"
+            android:textColor="@android:color/white"
+            app:layout_constraintLeft_toLeftOf="@+id/tv_name_title"
+            app:layout_constraintRight_toRightOf="@+id/tv_name_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_employee_content"
+            app:textNormalSolidColor="#4A148C" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_set_employee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onSetEmployeeClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="SET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_employee_title"
+            app:layout_constraintLeft_toRightOf="@+id/et_salary"
+            app:layout_constraintTop_toTopOf="@+id/tv_employee_title"
+            app:textNormalSolidColor="#311B92"
+            app:textPressedSolidColor="#673AB7"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_get_employee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onGetEmployeeClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="GET"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_employee_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_set_salary"
+            app:layout_constraintTop_toTopOf="@+id/tv_employee_title"
+            app:textNormalSolidColor="#311B92"
+            app:textPressedSolidColor="#673AB7"
+            app:textRadius="4dp" />
+
+        <com.kevin.suppertextview.SupperTextView
+            android:id="@+id/tv_remove_employee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:onClick="onRemoveEmployeeClick"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="REMOVE"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_employee_title"
+            app:layout_constraintLeft_toRightOf="@+id/tv_get_salary"
+            app:layout_constraintTop_toTopOf="@+id/tv_employee_title"
+            app:textNormalSolidColor="#4A148C"
+            app:textPressedSolidColor="#9C27B0"
+            app:textRadius="4dp" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

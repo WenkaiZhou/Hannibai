@@ -3,16 +3,13 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "26.0.0"
-
     defaultConfig {
         applicationId "com.kevin.hannibai.sample"
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
     buildTypes {
         release {
@@ -21,7 +18,7 @@ android {
         }
 
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -36,10 +33,9 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 
-    compile project(':hannibai-annotation')
-
     compile project(':hannibai')
     annotationProcessor project(':hannibai-compiler')
     compile project(':hannibai-converters:hannibai-converter-gson')
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.kevin:suppertextview:0.1.3'
 }
