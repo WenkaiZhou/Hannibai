@@ -22,6 +22,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions{
+        exclude'META-INF/DEPENDENCIES.txt'
+        exclude'META-INF/LICENSE.txt'
+        exclude'META-INF/NOTICE.txt'
+        exclude'META-INF/NOTICE'
+        exclude'META-INF/LICENSE'
+        exclude'META-INF/DEPENDENCIES'
+        exclude'META-INF/notice.txt'
+        exclude'META-INF/license.txt'
+        exclude'META-INF/dependencies.txt'
+        exclude'META-INF/LGPL2.1'
+    }
 }
 
 dependencies {
@@ -35,7 +48,14 @@ dependencies {
 
     compile project(':hannibai')
     annotationProcessor project(':hannibai-compiler')
+
+    // gson
     compile project(':hannibai-converters:hannibai-converter-gson')
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.kevin:suppertextview:0.1.3'
+
+    // jackson
+    compile project(':hannibai-converters:hannibai-converter-jackson')
+    compile 'com.fasterxml.jackson.core:jackson-core:2.9.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.1'
 }

@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
         mEtNo = (EditText) this.findViewById(R.id.et_no);
         mEtSalary = (EditText) this.findViewById(R.id.et_salary);
 
-        testPreference = Hannibai.create(TestPreferenceHandle.class, "123");
+        testPreference = Hannibai.create(TestPreferenceHandle.class);
     }
 
     @Override
