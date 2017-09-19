@@ -7,7 +7,7 @@
 1. 如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加如下到 `dependencies` :
 
 	```
-	compile 'com.kevin:hannibai:0.2.7'
+	compile 'com.kevin:hannibai:0.2.8'
 	annotationProcessor 'com.kevin:hannibai-compiler:0.2.5'
 	```
 
