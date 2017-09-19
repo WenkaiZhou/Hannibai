@@ -23,6 +23,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -99,20 +100,36 @@ public class HandleImplGenerator extends ElementGenerator {
 
                 // The get method
                 methodSpecs.add(
-                        MethodSpec.methodBuilder(GET + formatName)
-                                .addModifiers(Modifier.PUBLIC)
-                                .returns(ClassName.get(enclosedElement.asType()))
-                                .addAnnotations(defValueAnnotation)
-                                .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                        enclosedElement.getSimpleName())
-                                )
-                                .addStatement("return $T.get($N, $L, $S, $L)",
-                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                        "mSharedPreferencesName",
-                                        "mId",
-                                        enclosedElement.getSimpleName(),
-                                        defValue)
-                                .build()
+                        defValue != null ?
+                                MethodSpec.methodBuilder(GET + formatName)
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .returns(ClassName.get(enclosedElement.asType()))
+                                        .addAnnotations(defValueAnnotation)
+                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .addStatement("return $T.get1($N, $L, $S, $L)",
+                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                "mSharedPreferencesName",
+                                                "mId",
+                                                enclosedElement.getSimpleName(),
+                                                defValue)
+                                        .build()
+                                :
+                                MethodSpec.methodBuilder(GET + formatName)
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .returns(ClassName.get(enclosedElement.asType()))
+                                        .addAnnotations(defValueAnnotation)
+                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                                                enclosedElement.getSimpleName())
+                                        )
+                                        .addStatement("return $T.get2($N, $L, $S, $L)",
+                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                "mSharedPreferencesName",
+                                                "mId",
+                                                enclosedElement.getSimpleName(),
+                                                ((ClassName) ClassName.get(enclosedElement.asType())).simpleName() + ".class")
+                                        .build()
                 );
 
                 HashSet<AnnotationSpec> setMethodAnnotations = new LinkedHashSet<>();
@@ -201,18 +218,18 @@ public class HandleImplGenerator extends ElementGenerator {
         }
 
 //        if (methodSpecs.size() > 0) {
-            // The deleteAll method
-            MethodSpec methodDelete = MethodSpec.methodBuilder(REMOVE_ALL)
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(TypeName.VOID)
-                    .addAnnotation(AnnotationSpec.builder(Apply.class).build())
-                    .addJavadoc(REMOVE_ALL_METHOD_JAVA_DOC)
-                    .addStatement("$T.clear($N, $L)",
-                            ClassName.get(PACKAGE_NAME, HANNIBAI),
-                            "mSharedPreferencesName",
-                            "mId")
-                    .build();
-            methodSpecs.add(methodDelete);
+        // The deleteAll method
+        MethodSpec methodDelete = MethodSpec.methodBuilder(REMOVE_ALL)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.VOID)
+                .addAnnotation(AnnotationSpec.builder(Apply.class).build())
+                .addJavadoc(REMOVE_ALL_METHOD_JAVA_DOC)
+                .addStatement("$T.clear($N, $L)",
+                        ClassName.get(PACKAGE_NAME, HANNIBAI),
+                        "mSharedPreferencesName",
+                        "mId")
+                .build();
+        methodSpecs.add(methodDelete);
 //        }
 
         // Add constructor method
