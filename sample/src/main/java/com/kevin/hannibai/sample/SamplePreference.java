@@ -15,6 +15,7 @@
  */
 package com.kevin.hannibai.sample;
 
+import com.kevin.hannibai.annotation.Apply;
 import com.kevin.hannibai.annotation.Commit;
 import com.kevin.hannibai.annotation.DefBoolean;
 import com.kevin.hannibai.annotation.DefFloat;
