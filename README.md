@@ -7,8 +7,8 @@
 1. 如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加下面两行行到 `dependencies` :
 
 ```
-compile 'com.kevin:hannibai:0.2.6'
-annotationProcessor 'com.kevin:hannibai-compiler:0.2.4'
+compile 'com.kevin:hannibai:0.2.7'
+annotationProcessor 'com.kevin:hannibai-compiler:0.2.5'
 ```
 
 2. 引入JSON序列化
