@@ -4,17 +4,18 @@
 
 ## 在项目中使用[Hannibai](https://github.com/xuehuayous/Hannibal) 
 
-1. 如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加下面两行行到 `dependencies` :
+1. 如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加如下到 `dependencies` :
 
-```
-compile 'com.kevin:hannibai:0.2.7'
-annotationProcessor 'com.kevin:hannibai-compiler:0.2.5'
-```
+	```
+	compile 'com.kevin:hannibai:0.2.7'
+	annotationProcessor 'com.kevin:hannibai-compiler:0.2.5'
+	```
 
 2. 引入JSON序列化
-```
-compile 'com.kevin:hannibai-converter-gson:0.2.6'
-```
+
+	```
+	compile 'com.kevin:hannibai-converter-gson:0.2.6'
+	```
 
 ## 简单使用
 
@@ -80,9 +81,70 @@ testPreference.removeUserName();
 
 ## 进阶使用
 
-未完待续。。。
+1. 设置默认值
 
+	```
+	@DefString("zwenkai")
+	public String userName;
+	```
+
+	支持
+
+	| 类型 | sample |
+	|---|---|
+	| DefString | @DefString("zwenkai")|
+	| DefInt | @DefInt(18)|
+	| DefBoolean | @DefBoolean(true)|
+	| DefLong | @DefLong(123456789)|
+	| DefFloat | @DefFloat(123.45F)|
+
+2. 设置过期时间
+
+	> 默认不会过期
+	
+	```
+	@Expire(value = 3, unit = Expire.Unit.MINUTES)
+	public long salary;
+	```
+	
+	可以设置更新数据时重新倒计时：
+	
+	```
+	@Expire(value = 5, unit = Expire.Unit.MINUTES, update = true)
+	public long salary;
+	```
+	
+	支持
+	
+	| 单位 | sample |
+	|---|---|
+	| 毫秒 | @Expire(value = 1, unit = Expire.Unit.MILLISECONDS)|
+	| 秒 | @Expire(value = 1, unit = Expire.Unit.SECONDS)|
+	| 分 | @Expire(value = 1, unit = Expire.Unit.MINUTES)|
+	| 小时 | @Expire(value = 1, unit = Expire.Unit.HOURS)|
+	| 天 | @Expire(value = 1, unit = Expire.Unit.DAYS)|
+	
+3. 设置提交类型
+
+	> 提交类型有`Commit`和`Apply`两种，默认为`Apply`。
+	
+	1. Commit
+	
+		```
+		@Commit
+		public String userName;
+		```
+
+	2. Apply
+	
+		```
+		@Apply
+		public String userName;
+		```
+	
 # 混淆
+
+> 如果使用了混淆，添加如下到混淆配置文件
 
 ```
 -dontwarn com.kevin.hannibai.**
