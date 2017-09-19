@@ -1,6 +1,6 @@
 # Hannibal
 
-一种简单的方法来使用android SharePreference。
+一种简单优雅的方法来使用android SharePreference。
 
 ## 在项目中使用[Hannibai](https://github.com/xuehuayous/Hannibal) 
 
@@ -11,11 +11,12 @@
 	annotationProcessor 'com.kevin:hannibai-compiler:0.2.5'
 	```
 
-2. 引入JSON序列化
+2. 如果使用Gson进行JSON转换，引入JSON序列化
 
 	```
 	compile 'com.kevin:hannibai-converter-gson:0.2.6'
 	```
+3. 这里仅仅实现了GSON的实现，后续会扩展，或者你也可以仿照Gson扩展。
 
 ## 简单使用
 
@@ -167,6 +168,10 @@
 		@Apply
 		public String userName;
 		```
+	
+## 更多
+
+> 请参考项目中示例
 	
 # 混淆
 
