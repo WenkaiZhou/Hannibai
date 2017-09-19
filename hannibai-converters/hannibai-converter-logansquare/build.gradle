@@ -27,7 +27,6 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
     provided "com.kevin:hannibai-annotation:${VERSION_NAME}"
-//    provided "com.kevin:hannibai:${VERSION_NAME}"
     provided 'com.kevin:hannibai:0.2.4'
     provided 'com.bluelinelabs:logansquare:1.3.6'
 }
