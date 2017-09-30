@@ -8,7 +8,7 @@
 
 	```
 	compile 'com.kevin:hannibai:0.2.9'
-	annotationProcessor 'com.kevin:hannibai-compiler:0.2.6'
+	annotationProcessor 'com.kevin:hannibai-compiler:0.2.9'
 	```
 
 2. 引入JSON序列化
