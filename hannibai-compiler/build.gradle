@@ -16,8 +16,8 @@ dependencies {
 setProperty "POM_ARTIFACT_ID", "hannibai-compiler"
 setProperty "PROJECT_NAME", "Hannibai-compiler"
 setProperty "POM_PACKAGING", "jar"
-setProperty "VERSION_CODE", "13"
-setProperty "VERSION_NAME", "0.2.5"
+setProperty "VERSION_CODE", "14"
+setProperty "VERSION_NAME", "0.2.6"
 
 ext {
     kevinSourceDocFiles = [rootProject.file('gradle/java-sources-docs.gradle')]
