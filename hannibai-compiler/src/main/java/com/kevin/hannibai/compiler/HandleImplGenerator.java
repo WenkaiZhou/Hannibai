@@ -21,9 +21,10 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -33,6 +34,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import static com.kevin.hannibai.compiler.Constants.CLASS_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.GET;
@@ -98,12 +100,25 @@ public class HandleImplGenerator extends ElementGenerator {
                 String expireValue = HannibaiUtils.getExpireValue(enclosedElement);
                 boolean expireUpdate = HannibaiUtils.getExpireUpdate(enclosedElement);
 
+                TypeMirror typeMirror = enclosedElement.asType();
+                TypeName typeName = TypeName.get(typeMirror);
+                StringBuffer types = new StringBuffer();
+                if (typeName instanceof ParameterizedTypeName) {
+                    List<TypeName> typeArguments = ((ParameterizedTypeName) typeName).typeArguments;
+                    for (int i = 0; i < typeArguments.size(); i++) {
+                        types.append(((ClassName) typeArguments.get(i)).simpleName() + ".class");
+                        if (i != typeArguments.size() - 1) {
+                            types.append(", ");
+                        }
+                    }
+                }
+
                 // The get method
                 methodSpecs.add(
                         defValue != null ?
                                 MethodSpec.methodBuilder(GET + formatName)
                                         .addModifiers(Modifier.PUBLIC)
-                                        .returns(ClassName.get(enclosedElement.asType()))
+                                        .returns(TypeName.get(enclosedElement.asType()))
                                         .addAnnotations(defValueAnnotation)
                                         .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
                                                 enclosedElement.getSimpleName())
@@ -116,20 +131,56 @@ public class HandleImplGenerator extends ElementGenerator {
                                                 defValue)
                                         .build()
                                 :
-                                MethodSpec.methodBuilder(GET + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(ClassName.get(enclosedElement.asType()))
-                                        .addAnnotations(defValueAnnotation)
-                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("return $T.get2($N, $L, $S, $L)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName(),
-                                                ((ClassName) ClassName.get(enclosedElement.asType())).simpleName() + ".class")
-                                        .build()
+                                TypeName.get(enclosedElement.asType()) instanceof ClassName ?
+
+                                        MethodSpec.methodBuilder(GET + formatName)
+                                                .addModifiers(Modifier.PUBLIC)
+                                                .returns(TypeName.get(enclosedElement.asType()))
+                                                .addAnnotations(defValueAnnotation)
+                                                .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                                                        enclosedElement.getSimpleName())
+                                                )
+                                                .addStatement("return $T.get2($N, $L, $S, $L)",
+                                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                        "mSharedPreferencesName",
+                                                        "mId",
+                                                        enclosedElement.getSimpleName(),
+                                                        ((ClassName) TypeName.get(enclosedElement.asType())).simpleName() + ".class")
+                                                .build()
+                                        :
+
+                                        MethodSpec.methodBuilder(GET + formatName)
+                                                .addModifiers(Modifier.PUBLIC)
+                                                .returns(TypeName.get(enclosedElement.asType()))
+                                                .addAnnotations(defValueAnnotation)
+                                                .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                                                        enclosedElement.getSimpleName())
+                                                )
+                                                .beginControlFlow("$T type = new $T()", ClassName.get("java.lang.reflect", "Type"), ClassName.get("java.lang.reflect", "ParameterizedType"))
+
+                                                .addCode("@Override\n")
+                                                .beginControlFlow("public Type getRawType()")
+                                                .addStatement("return " + ((ParameterizedTypeName) typeName).rawType.simpleName() + ".class")
+                                                .endControlFlow()
+
+                                                .addCode("@Override\n")
+                                                .beginControlFlow("public Type[] getActualTypeArguments()")
+                                                .addStatement("return new Type[]{" + types.toString() + "}")
+                                                .endControlFlow()
+
+                                                .addCode("@Override\n")
+                                                .beginControlFlow("public Type getOwnerType()")
+                                                .addStatement("return null")
+                                                .endControlFlow()
+
+                                                .endControlFlow("")
+                                                .addStatement("return $T.get2($N, $L, $S, $L)",
+                                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
+                                                        "mSharedPreferencesName",
+                                                        "mId",
+                                                        enclosedElement.getSimpleName(),
+                                                        "type")
+                                                .build()
                 );
 
                 HashSet<AnnotationSpec> setMethodAnnotations = new LinkedHashSet<>();
@@ -164,7 +215,7 @@ public class HandleImplGenerator extends ElementGenerator {
                                 :
                                 MethodSpec.methodBuilder(SET + formatName)
                                         .addModifiers(Modifier.PUBLIC)
-                                        .addParameter(ClassName.get(enclosedElement.asType()),
+                                        .addParameter(TypeName.get(enclosedElement.asType()),
                                                 enclosedElement.getSimpleName().toString(), Modifier.FINAL)
                                         .returns(returnType)
                                         .addAnnotations(setMethodAnnotations)
@@ -240,7 +291,7 @@ public class HandleImplGenerator extends ElementGenerator {
 
         methodSpecs.add(MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ClassName.get(String.class), "id")
+                .addParameter(TypeName.get(String.class), "id")
                 .addStatement("this.$N = $L", "mId", "id")
                 .build());
 
@@ -256,7 +307,7 @@ public class HandleImplGenerator extends ElementGenerator {
         // Field
         HashSet<FieldSpec> fieldSpecs = new LinkedHashSet<>();
         fieldSpecs.add(FieldSpec
-                .builder(ClassName.get(String.class), "mSharedPreferencesName", Modifier.PRIVATE, Modifier.FINAL)
+                .builder(TypeName.get(String.class), "mSharedPreferencesName", Modifier.PRIVATE, Modifier.FINAL)
                 .initializer("$S", mSharedPreferencesName)
                 .build());
 
