@@ -106,10 +106,15 @@ public class HandleImplGenerator extends ElementGenerator {
                 if (typeName instanceof ParameterizedTypeName) {
                     List<TypeName> typeArguments = ((ParameterizedTypeName) typeName).typeArguments;
                     for (int i = 0; i < typeArguments.size(); i++) {
-                        types.append(((ClassName) typeArguments.get(i)).simpleName() + ".class");
-                        if (i != typeArguments.size() - 1) {
-                            types.append(", ");
+                        if (typeArguments.get(i) instanceof ClassName) {
+                            types.append(typeArguments.get(i) + ".class");
+                            if (i != typeArguments.size() - 1) {
+                                types.append(", ");
+                            }
+                        } else {
+                            Utils.error(enclosedElement, "don`t support!!!");
                         }
+
                     }
                 }
 
@@ -160,7 +165,7 @@ public class HandleImplGenerator extends ElementGenerator {
 
                                                 .addCode("@Override\n")
                                                 .beginControlFlow("public Type getRawType()")
-                                                .addStatement("return " + ((ParameterizedTypeName) typeName).rawType.simpleName() + ".class")
+                                                .addStatement("return " + ((ParameterizedTypeName) typeName).rawType + ".class")
                                                 .endControlFlow()
 
                                                 .addCode("@Override\n")
