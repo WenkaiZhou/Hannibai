@@ -84,7 +84,7 @@ final class RealHannibai {
         return getContext().getSharedPreferences(name + id, Context.MODE_PRIVATE);
     }
 
-    final <T> T get(String name, String id, String key, T defValue, Class clazz) {
+    final <T> T get(String name, String id, String key, T defValue, Type type) {
         if (Hannibai.debug) Log.d(TAG, String.format("Retrieve the %s from the preferences.", key));
         String value = getSharedPreferences(name, id).getString(key, null);
         if (value == null || value.length() == 0) {
@@ -92,10 +92,10 @@ final class RealHannibai {
                 Log.d(TAG, String.format("Value of %s is empty, return the default %s.", key, defValue));
             return defValue;
         } else {
-            ParameterizedType type = type(BaseModel.class, clazz);
+            ParameterizedType parameterizedType = type(BaseModel.class, type);
             BaseModel<T> model = null;
             try {
-                model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? Utils.endecode(value) : value);
+                model = (BaseModel<T>) getConverterFactory().toType(parameterizedType).convert(mEncrypt ? Utils.endecode(value) : value);
             } catch (Exception e) {
                 if (mEncrypt) {
                     Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");

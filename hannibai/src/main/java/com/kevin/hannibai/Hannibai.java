@@ -17,6 +17,8 @@ package com.kevin.hannibai;
 
 import android.content.Context;
 
+import java.lang.reflect.Type;
+
 /**
  * Created by zhouwenkai on 2017/8/14.
  */
@@ -56,8 +58,8 @@ public final class Hannibai {
         return RealHannibai.getInstance().get(name, id, key, defValue, defValue.getClass());
     }
 
-    public static final <T> T get2(String name, String id, String key, Class clazz) {
-        return RealHannibai.getInstance().get(name, id, key, null, clazz);
+    public static final <T> T get2(String name, String id, String key, Type type) {
+        return RealHannibai.getInstance().get(name, id, key, null, type);
     }
 
     public static final <T> void set1(String name, String id, String key, long expire, boolean updateExpire, T newValue) {
