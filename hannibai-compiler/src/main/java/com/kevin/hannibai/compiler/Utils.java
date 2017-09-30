@@ -15,6 +15,8 @@
  */
 package com.kevin.hannibai.compiler;
 
+import java.util.List;
+
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
@@ -48,4 +50,13 @@ class Utils {
         EnvironmentManager.getManager().getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
     }
 
+    static String join(String separator, List<String> parts) {
+        if (parts.isEmpty()) return "";
+        StringBuilder result = new StringBuilder();
+        result.append(parts.get(0));
+        for (int i = 1; i < parts.size(); i++) {
+            result.append(separator).append(parts.get(i));
+        }
+        return result.toString();
+    }
 }

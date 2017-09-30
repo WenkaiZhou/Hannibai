@@ -21,7 +21,6 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -34,7 +33,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 import static com.kevin.hannibai.compiler.Constants.CLASS_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.GET;
@@ -68,6 +66,28 @@ public class HandleImplGenerator extends ElementGenerator {
         List<? extends Element> enclosedElements = element.getEnclosedElements();
         HashSet<MethodSpec> methodSpecs = new LinkedHashSet<>();
 
+        // Field
+        HashSet<FieldSpec> fieldSpecs = new LinkedHashSet<>();
+        fieldSpecs.add(FieldSpec
+                .builder(TypeName.get(String.class), "mSharedPreferencesName", Modifier.PRIVATE, Modifier.FINAL)
+                .initializer("$S", mSharedPreferencesName)
+                .build());
+
+        fieldSpecs.add(FieldSpec
+                .builder(ClassName.get(String.class), "mId", Modifier.PRIVATE, Modifier.FINAL)
+                .build());
+
+        // Add constructor method
+        methodSpecs.add(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE)
+                .addStatement("this.$N = $S", "mId", "")
+                .build());
+
+        methodSpecs.add(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(TypeName.get(String.class), "id")
+                .addStatement("this.$N = $L", "mId", "id")
+                .build());
 
         // Add getInstance method
         methodSpecs.add(
@@ -78,198 +98,36 @@ public class HandleImplGenerator extends ElementGenerator {
                         .build()
         );
 
+        // Holder class
+        TypeSpec holder = TypeSpec.classBuilder("Holder")
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+                .addField(FieldSpec.builder(ClassName.get(packageName, className), "INSTANCE")
+                        .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                        .initializer("new $T()", ClassName.get(packageName, className))
+                        .build())
+                .build();
+
+
         for (Element enclosedElement : enclosedElements) {
 
             if (enclosedElement.getKind() == ElementKind.FIELD) {
                 String formatName = Utils.capitalize(enclosedElement.getSimpleName());
 
-                Iterable<AnnotationSpec> defValueAnnotation = HannibaiUtils.createDefValueAnnotation(
-                        enclosedElement, enclosedElement.asType().toString());
-
-                TypeName returnType;
                 AnnotationSpec submitAnnotation;
                 if (enclosedElement.getAnnotation(Commit.class) == null) {
                     submitAnnotation = AnnotationSpec.builder(Apply.class).build();
-                    returnType = TypeName.VOID;
                 } else {
                     submitAnnotation = AnnotationSpec.builder(Commit.class).build();
-                    returnType = TypeName.BOOLEAN;
-                }
-
-                Object defValue = HannibaiUtils.getDefValue(enclosedElement, enclosedElement.asType().toString());
-                String expireValue = HannibaiUtils.getExpireValue(enclosedElement);
-                boolean expireUpdate = HannibaiUtils.getExpireUpdate(enclosedElement);
-
-                TypeMirror typeMirror = enclosedElement.asType();
-                TypeName typeName = TypeName.get(typeMirror);
-                StringBuffer types = new StringBuffer();
-                if (typeName instanceof ParameterizedTypeName) {
-                    List<TypeName> typeArguments = ((ParameterizedTypeName) typeName).typeArguments;
-                    for (int i = 0; i < typeArguments.size(); i++) {
-                        if (typeArguments.get(i) instanceof ClassName) {
-                            types.append(typeArguments.get(i) + ".class");
-                            if (i != typeArguments.size() - 1) {
-                                types.append(", ");
-                            }
-                        } else {
-                            Utils.error(enclosedElement, "don`t support!!!");
-                        }
-
-                    }
                 }
 
                 // The get method
-                methodSpecs.add(
-                        defValue != null ?
-                                MethodSpec.methodBuilder(GET + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(TypeName.get(enclosedElement.asType()))
-                                        .addAnnotations(defValueAnnotation)
-                                        .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("return $T.get1($N, $L, $S, $L)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName(),
-                                                defValue)
-                                        .build()
-                                :
-                                TypeName.get(enclosedElement.asType()) instanceof ClassName ?
-
-                                        MethodSpec.methodBuilder(GET + formatName)
-                                                .addModifiers(Modifier.PUBLIC)
-                                                .returns(TypeName.get(enclosedElement.asType()))
-                                                .addAnnotations(defValueAnnotation)
-                                                .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                        enclosedElement.getSimpleName())
-                                                )
-                                                .addStatement("return $T.get2($N, $L, $S, $L)",
-                                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                        "mSharedPreferencesName",
-                                                        "mId",
-                                                        enclosedElement.getSimpleName(),
-                                                        ((ClassName) TypeName.get(enclosedElement.asType())).simpleName() + ".class")
-                                                .build()
-                                        :
-
-                                        MethodSpec.methodBuilder(GET + formatName)
-                                                .addModifiers(Modifier.PUBLIC)
-                                                .returns(TypeName.get(enclosedElement.asType()))
-                                                .addAnnotations(defValueAnnotation)
-                                                .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                                                        enclosedElement.getSimpleName())
-                                                )
-                                                .beginControlFlow("$T type = new $T()", ClassName.get("java.lang.reflect", "Type"), ClassName.get("java.lang.reflect", "ParameterizedType"))
-
-                                                .addCode("@Override\n")
-                                                .beginControlFlow("public Type getRawType()")
-                                                .addStatement("return " + ((ParameterizedTypeName) typeName).rawType + ".class")
-                                                .endControlFlow()
-
-                                                .addCode("@Override\n")
-                                                .beginControlFlow("public Type[] getActualTypeArguments()")
-                                                .addStatement("return new Type[]{" + types.toString() + "}")
-                                                .endControlFlow()
-
-                                                .addCode("@Override\n")
-                                                .beginControlFlow("public Type getOwnerType()")
-                                                .addStatement("return null")
-                                                .endControlFlow()
-
-                                                .endControlFlow("")
-                                                .addStatement("return $T.get2($N, $L, $S, $L)",
-                                                        ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                        "mSharedPreferencesName",
-                                                        "mId",
-                                                        enclosedElement.getSimpleName(),
-                                                        "type")
-                                                .build()
-                );
-
-                HashSet<AnnotationSpec> setMethodAnnotations = new LinkedHashSet<>();
-                setMethodAnnotations.add(submitAnnotation);
-                AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
-                if (expireAnnotation != null) {
-                    setMethodAnnotations.add(expireAnnotation);
-                }
+                methodSpecs.add(createGetMethodSpec(enclosedElement, formatName));
 
                 // The set method
-                methodSpecs.add(
-                        enclosedElement.getAnnotation(Commit.class) == null ?
-                                MethodSpec.methodBuilder(SET + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .addParameter(ClassName.get(enclosedElement.asType()),
-                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                        .returns(returnType)
-                                        .addAnnotations(setMethodAnnotations)
-                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName(),
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("$T.set1($N, $L, $S, $L, $L, $L)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName(),
-                                                expireValue,
-                                                expireUpdate,
-                                                enclosedElement.getSimpleName())
-                                        .build()
-                                :
-                                MethodSpec.methodBuilder(SET + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .addParameter(TypeName.get(enclosedElement.asType()),
-                                                enclosedElement.getSimpleName().toString(), Modifier.FINAL)
-                                        .returns(returnType)
-                                        .addAnnotations(setMethodAnnotations)
-                                        .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName(),
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("return $T.set2($N, $L, $S, $L, $L, $L)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName(),
-                                                expireValue,
-                                                expireUpdate,
-                                                enclosedElement.getSimpleName())
-                                        .build()
-                );
+                methodSpecs.add(createSetMethodSpec(enclosedElement, formatName, submitAnnotation));
 
                 // The remove method
-                methodSpecs.add(
-                        enclosedElement.getAnnotation(Commit.class) == null ?
-                                MethodSpec.methodBuilder(REMOVE + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(returnType)
-                                        .addAnnotation(submitAnnotation)
-                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("$T.remove1($N, $L, $S)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName())
-                                        .build()
-                                :
-                                MethodSpec.methodBuilder(REMOVE + formatName)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(returnType)
-                                        .addAnnotation(submitAnnotation)
-                                        .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
-                                                enclosedElement.getSimpleName())
-                                        )
-                                        .addStatement("return $T.remove2($N, $L, $S)",
-                                                ClassName.get(PACKAGE_NAME, HANNIBAI),
-                                                "mSharedPreferencesName",
-                                                "mId",
-                                                enclosedElement.getSimpleName())
-                                        .build()
-                );
+                methodSpecs.add(createRemoveMethodSpec(enclosedElement, formatName, submitAnnotation));
             }
         }
 
@@ -288,38 +146,6 @@ public class HandleImplGenerator extends ElementGenerator {
         methodSpecs.add(methodDelete);
 //        }
 
-        // Add constructor method
-        methodSpecs.add(MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PRIVATE)
-                .addStatement("this.$N = $S", "mId", "")
-                .build());
-
-        methodSpecs.add(MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeName.get(String.class), "id")
-                .addStatement("this.$N = $L", "mId", "id")
-                .build());
-
-        // Holder class
-        TypeSpec holder = TypeSpec.classBuilder("Holder")
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
-                .addField(FieldSpec.builder(ClassName.get(packageName, className), "INSTANCE")
-                        .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new $T()", ClassName.get(packageName, className))
-                        .build())
-                .build();
-
-        // Field
-        HashSet<FieldSpec> fieldSpecs = new LinkedHashSet<>();
-        fieldSpecs.add(FieldSpec
-                .builder(TypeName.get(String.class), "mSharedPreferencesName", Modifier.PRIVATE, Modifier.FINAL)
-                .initializer("$S", mSharedPreferencesName)
-                .build());
-
-        fieldSpecs.add(FieldSpec
-                .builder(ClassName.get(String.class), "mId", Modifier.PRIVATE, Modifier.FINAL)
-                .build());
-
         return TypeSpec.classBuilder(className)
                 .addSuperinterface(ClassName.get(packageName, mSuperinterface))
                 .addSuperinterface(ClassName.get(Constants.PACKAGE_NAME, Constants.IHANDLE))
@@ -329,5 +155,196 @@ public class HandleImplGenerator extends ElementGenerator {
                 .addFields(fieldSpecs)
                 .addJavadoc(CLASS_JAVA_DOC)
                 .build();
+    }
+
+    private MethodSpec createGetMethodSpec(Element enclosedElement, String formatName) {
+        // get the default value annotation
+        Iterable<AnnotationSpec> defValueAnnotation = HannibaiUtils
+                .createDefValueAnnotation(enclosedElement, enclosedElement.asType().toString());
+        // get the default value
+        Object defValue = HannibaiUtils.getDefValue(enclosedElement, enclosedElement.asType().toString());
+        // get the Element TypeName
+        TypeName typeName = TypeName.get(enclosedElement.asType());
+
+        // has the default value
+        if (null != defValue) {
+            return MethodSpec.methodBuilder(GET + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(typeName)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("return $T.get1($N, $L, $S, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            defValue)
+                    .build();
+        } else if (typeName instanceof ClassName) {
+            String type = Utils.join(".", ((ClassName) typeName).simpleNames()) + ".class";
+
+            return MethodSpec.methodBuilder(GET + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(typeName)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("return $T.get2($N, $L, $S, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            type)
+                    .build();
+        } else if (typeName instanceof ParameterizedTypeName) {
+            String rawType = Utils.join(".", ((ParameterizedTypeName) typeName).rawType.simpleNames()) + ".class";
+
+            StringBuffer types = new StringBuffer();
+            List<TypeName> typeArguments = ((ParameterizedTypeName) typeName).typeArguments;
+            for (int i = 0; i < typeArguments.size(); i++) {
+                if (typeArguments.get(i) instanceof ClassName) {
+                    types.append((Utils.join(".", ((ClassName) typeArguments.get(i)).simpleNames()) + ".class"));
+                    if (i != typeArguments.size() - 1) {
+                        types.append(", ");
+                    }
+                } else {
+                    Utils.error(enclosedElement, "don`t support!!!");
+                }
+            }
+
+            return MethodSpec.methodBuilder(GET + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.get(enclosedElement.asType()))
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .beginControlFlow("$T type = new $T()",
+                            ClassName.get("java.lang.reflect", "Type"),
+                            ClassName.get("java.lang.reflect", "ParameterizedType"))
+
+                    .addCode("@Override\n")
+                    .beginControlFlow("public Type getRawType()")
+                    .addStatement("return " + rawType)
+                    .endControlFlow()
+
+                    .addCode("@Override\n")
+                    .beginControlFlow("public Type[] getActualTypeArguments()")
+                    .addStatement("return new Type[]{" + types + "}")
+                    .endControlFlow()
+
+                    .addCode("@Override\n")
+                    .beginControlFlow("public Type getOwnerType()")
+                    .addStatement("return null")
+                    .endControlFlow()
+
+                    .endControlFlow("")
+                    .addStatement("return $T.get2($N, $L, $S, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            "type")
+                    .build();
+
+        } else {
+            Utils.error(enclosedElement, "don`t support!!!");
+            return null;
+        }
+    }
+
+    private MethodSpec createSetMethodSpec(Element enclosedElement, String formatName,
+                                           AnnotationSpec submitAnnotation) {
+
+        HashSet<AnnotationSpec> setMethodAnnotations = new LinkedHashSet<>();
+        setMethodAnnotations.add(submitAnnotation);
+        AnnotationSpec expireAnnotation = HannibaiUtils.getExpireAnnotation(enclosedElement);
+        if (expireAnnotation != null) {
+            setMethodAnnotations.add(expireAnnotation);
+        }
+
+        String expireValue = HannibaiUtils.getExpireValue(enclosedElement);
+        boolean expireUpdate = HannibaiUtils.getExpireUpdate(enclosedElement);
+
+        if (enclosedElement.getAnnotation(Commit.class) == null) {
+            return MethodSpec.methodBuilder(SET + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ClassName.get(enclosedElement.asType()),
+                            enclosedElement.getSimpleName().toString(), Modifier.FINAL)
+                    .returns(TypeName.VOID)
+                    .addAnnotations(setMethodAnnotations)
+                    .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName(),
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("$T.set1($N, $L, $S, $L, $L, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            expireValue,
+                            expireUpdate,
+                            enclosedElement.getSimpleName())
+                    .build();
+
+
+        } else {
+            return MethodSpec.methodBuilder(SET + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(TypeName.get(enclosedElement.asType()),
+                            enclosedElement.getSimpleName().toString(), Modifier.FINAL)
+                    .returns(TypeName.BOOLEAN)
+                    .addAnnotations(setMethodAnnotations)
+                    .addJavadoc(String.format(PUT_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName(),
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("return $T.set2($N, $L, $S, $L, $L, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            expireValue,
+                            expireUpdate,
+                            enclosedElement.getSimpleName())
+                    .build();
+        }
+
+    }
+
+    private MethodSpec createRemoveMethodSpec(Element enclosedElement, String formatName,
+                                              AnnotationSpec submitAnnotation) {
+        if (enclosedElement.getAnnotation(Commit.class) == null) {
+            return MethodSpec.methodBuilder(REMOVE + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.VOID)
+                    .addAnnotation(submitAnnotation)
+                    .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("$T.remove1($N, $L, $S)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName())
+                    .build();
+        } else {
+            return MethodSpec.methodBuilder(REMOVE + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.BOOLEAN)
+                    .addAnnotation(submitAnnotation)
+                    .addJavadoc(String.format(REMOVE_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("return $T.remove2($N, $L, $S)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName())
+                    .build();
+        }
     }
 }
