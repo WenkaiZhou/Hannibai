@@ -25,6 +25,10 @@ import com.kevin.hannibai.annotation.DefString;
 import com.kevin.hannibai.annotation.Expire;
 import com.kevin.hannibai.annotation.SharePreference;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by zhouwenkai on 2017/8/12.
  */
@@ -62,4 +66,12 @@ public class SamplePreference {
     public Employee employee1;
 
     public Employee employee2;
+
+    public List<ArticleListResult.Article> articleList;
+
+    public ArrayList<ArticleListResult.Article> articleArrayList;
+
+    public Map<Integer, ArticleListResult.Article> articleMap;
+
+    public ArticleListResult.Article article;
 }
