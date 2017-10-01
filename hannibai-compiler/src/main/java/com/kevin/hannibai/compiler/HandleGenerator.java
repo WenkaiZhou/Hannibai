@@ -20,6 +20,7 @@ import com.kevin.hannibai.annotation.Commit;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
@@ -76,13 +77,20 @@ class HandleGenerator extends ElementGenerator {
                 methodSpecs.add(
                         MethodSpec.methodBuilder(GET + formatName)
                                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                .returns(ClassName.get(enclosedElement.asType()))
+                                .returns(TypeName.get(enclosedElement.asType()))
                                 .addAnnotations(defValueAnnotation)
                                 .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
                                         enclosedElement.getSimpleName())
                                 )
                                 .build()
                 );
+
+
+                MethodSpec observableGetMethod = createObservableGetMethodSpec(
+                        enclosedElement, defValueAnnotation, formatName);
+                if (null != observableGetMethod) {
+                    methodSpecs.add(observableGetMethod);
+                }
 
                 HashSet<AnnotationSpec> setMethodAnnotations = new LinkedHashSet<>();
                 setMethodAnnotations.add(submitAnnotation);
@@ -126,6 +134,43 @@ class HandleGenerator extends ElementGenerator {
                 .addSuperinterface(ClassName.get(Constants.PACKAGE_NAME, Constants.IHANDLE))
                 .addJavadoc(CLASS_JAVA_DOC)
                 .build();
+    }
+
+    private MethodSpec createObservableGetMethodSpec(final Element enclosedElement,
+                                                     Iterable<AnnotationSpec> defValueAnnotation,
+                                                     String formatName) {
+
+        if (RxJavaCheck.RXJAVA_2.equals(RxJavaCheck.RXJAVA)) {
+
+            ParameterizedTypeName typeName = ParameterizedTypeName
+                    .get(ClassName.bestGuess("io.reactivex.Observable"),
+                            TypeName.get(enclosedElement.asType()).box());
+
+            return MethodSpec.methodBuilder(GET + formatName + "1")
+                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                    .returns(typeName)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .build();
+        } else if (RxJavaCheck.RXJAVA_1.equals(RxJavaCheck.RXJAVA)) {
+
+            ParameterizedTypeName typeName = ParameterizedTypeName
+                    .get(ClassName.bestGuess("rx.Observable"),
+                            TypeName.get(enclosedElement.asType()).box());
+
+            return MethodSpec.methodBuilder(GET + formatName + "1")
+                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                    .returns(typeName)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .build();
+        } else {
+            return null;
+        }
     }
 
 }

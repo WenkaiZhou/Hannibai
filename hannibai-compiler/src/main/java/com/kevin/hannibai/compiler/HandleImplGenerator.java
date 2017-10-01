@@ -120,8 +120,18 @@ public class HandleImplGenerator extends ElementGenerator {
                     submitAnnotation = AnnotationSpec.builder(Commit.class).build();
                 }
 
+                // get the default value annotation
+                Iterable<AnnotationSpec> defValueAnnotation = HannibaiUtils
+                        .createDefValueAnnotation(enclosedElement, enclosedElement.asType().toString());
+
                 // The get method
-                methodSpecs.add(createGetMethodSpec(enclosedElement, formatName));
+                methodSpecs.add(createGetMethodSpec(enclosedElement, defValueAnnotation, formatName));
+
+                MethodSpec observableGetMethod = createObservableGetMethodSpec(
+                        enclosedElement, defValueAnnotation, formatName);
+                if (null != observableGetMethod) {
+                    methodSpecs.add(observableGetMethod);
+                }
 
                 // The set method
                 methodSpecs.add(createSetMethodSpec(enclosedElement, formatName, submitAnnotation));
@@ -157,10 +167,9 @@ public class HandleImplGenerator extends ElementGenerator {
                 .build();
     }
 
-    private MethodSpec createGetMethodSpec(Element enclosedElement, String formatName) {
-        // get the default value annotation
-        Iterable<AnnotationSpec> defValueAnnotation = HannibaiUtils
-                .createDefValueAnnotation(enclosedElement, enclosedElement.asType().toString());
+    private MethodSpec createGetMethodSpec(Element enclosedElement,
+                                           Iterable<AnnotationSpec> defValueAnnotation,
+                                           String formatName) {
         // get the default value
         Object defValue = HannibaiUtils.getDefValue(enclosedElement, enclosedElement.asType().toString());
         // get the Element TypeName
@@ -252,6 +261,78 @@ public class HandleImplGenerator extends ElementGenerator {
 
         } else {
             Utils.error(enclosedElement, "don`t support!!!");
+            return null;
+        }
+    }
+
+    private MethodSpec createObservableGetMethodSpec(Element enclosedElement,
+                                                     Iterable<AnnotationSpec> defValueAnnotation,
+                                                     String formatName) {
+        if (RxJavaCheck.RXJAVA_2.equals(RxJavaCheck.RXJAVA)) {
+
+            ParameterizedTypeName typeName = ParameterizedTypeName
+                    .get(ClassName.get("io.reactivex", "Observable"),
+                            TypeName.get(enclosedElement.asType()).box());
+
+            return MethodSpec.methodBuilder(GET + formatName + "1")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(typeName)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+
+                    .beginControlFlow("return $T.create(new $T<$T>()",
+                            ClassName.bestGuess("io.reactivex.Observable"),
+                            ClassName.bestGuess("io.reactivex.ObservableOnSubscribe"),
+                            TypeName.get(enclosedElement.asType()).box())
+                    .addCode("@Override\n")
+                    .beginControlFlow("public void subscribe($T<$T> e) throws $T",
+                            ClassName.bestGuess("io.reactivex.ObservableEmitter"),
+                            TypeName.get(enclosedElement.asType()).box(),
+                            ClassName.bestGuess("java.lang.Exception"))
+                    .addStatement("e.onNext($L)", GET + formatName + "()")
+                    .addStatement("e.onComplete()")
+                    .endControlFlow()
+                    .endControlFlow()
+                    .addCode(")\n")
+                    .addCode(".subscribeOn($T.io())\n",
+                            ClassName.bestGuess("io.reactivex.schedulers.Schedulers"))
+                    .addStatement(".observeOn($T.mainThread())",
+                            ClassName.bestGuess("io.reactivex.android.schedulers.AndroidSchedulers"))
+                    .build();
+        } else if (RxJavaCheck.RXJAVA_1.equals(RxJavaCheck.RXJAVA)) {
+            ParameterizedTypeName typeName = ParameterizedTypeName
+                    .get(ClassName.bestGuess("rx.Observable"),
+                            TypeName.get(enclosedElement.asType()).box());
+
+            return MethodSpec.methodBuilder(GET + formatName + "1")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(typeName)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .beginControlFlow("return $T.create(new $T<$T>()",
+                            ClassName.bestGuess("rx.Observable"),
+                            ClassName.bestGuess("rx.Observable.OnSubscribe"),
+                            TypeName.get(enclosedElement.asType()).box())
+                    .addCode("@Override\n")
+                    .beginControlFlow("public void call($T<? super $T> subscriber)",
+                            ClassName.bestGuess("rx.Subscriber"),
+                            TypeName.get(enclosedElement.asType()).box()
+                            )
+                    .addStatement("subscriber.onNext($L)", GET + formatName + "()")
+                    .addStatement("subscriber.onCompleted()")
+                    .endControlFlow()
+                    .endControlFlow()
+                    .addCode(")\n")
+                    .addCode(".subscribeOn($T.io())\n",
+                            ClassName.bestGuess("rx.schedulers.Schedulers"))
+                    .addStatement(".observeOn($T.mainThread())",
+                            ClassName.bestGuess("rx.android.schedulers.AndroidSchedulers"))
+                    .build();
+        } else {
             return null;
         }
     }
