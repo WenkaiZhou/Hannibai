@@ -54,6 +54,14 @@ public final class Hannibai {
         RealHannibai.getInstance().setConverterFactory(factory);
     }
 
+    public static final <T> boolean contains1(String name, String id, String key, T defValue) {
+        return RealHannibai.getInstance().contains(name, id, key, defValue.getClass());
+    }
+
+    public static final <T> boolean contains2(String name, String id, String key, Type type) {
+        return RealHannibai.getInstance().contains(name, id, key, type);
+    }
+
     public static final <T> T get1(String name, String id, String key, T defValue) {
         return RealHannibai.getInstance().get(name, id, key, defValue, defValue.getClass());
     }

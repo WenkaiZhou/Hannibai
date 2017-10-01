@@ -84,6 +84,50 @@ final class RealHannibai {
         return getContext().getSharedPreferences(name + id, Context.MODE_PRIVATE);
     }
 
+    final <T> boolean contains(String name, String id, String key, Type type) {
+        String value = getSharedPreferences(name, id).getString(key, null);
+        if (value == null || value.length() == 0) {
+            if (Hannibai.debug)
+                Log.d(TAG, String.format("Value of %s is empty.", key));
+            return false;
+        } else {
+            ParameterizedType parameterizedType = type(BaseModel.class, type);
+            BaseModel<T> model = null;
+            try {
+                model = (BaseModel<T>) getConverterFactory().toType(parameterizedType).convert(mEncrypt ? Utils.endecode(value) : value);
+            } catch (Exception e) {
+                if (mEncrypt) {
+                    Log.e(TAG, "Convert JSON to Model failed，will use unencrypted retry again.");
+                } else {
+                    Log.e(TAG, "Convert JSON to Model failed，will use encrypted retry again.");
+                }
+                if (Hannibai.debug) {
+                    e.printStackTrace();
+                }
+                try {
+                    model = (BaseModel<T>) getConverterFactory().toType(type).convert(mEncrypt ? value : Utils.endecode(value));
+                } catch (Exception e1) {
+                    Log.e(TAG, "Convert JSON to Model complete failure.");
+                    if (Hannibai.debug) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+
+            if (null == model) {
+                return false;
+            }
+
+            if (model.dataExpired()) {
+                if (Hannibai.debug)
+                    Log.d(TAG, String.format("Value of %s is %s expired, return false.", key, model.data));
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     final <T> T get(String name, String id, String key, T defValue, Type type) {
         if (Hannibai.debug) Log.d(TAG, String.format("Retrieve the %s from the preferences.", key));
         String value = getSharedPreferences(name, id).getString(key, null);

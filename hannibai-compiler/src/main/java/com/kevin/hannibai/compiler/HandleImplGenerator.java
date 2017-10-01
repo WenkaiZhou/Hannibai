@@ -35,6 +35,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import static com.kevin.hannibai.compiler.Constants.CLASS_JAVA_DOC;
+import static com.kevin.hannibai.compiler.Constants.CONTAINS;
+import static com.kevin.hannibai.compiler.Constants.CONTAINS_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.GET;
 import static com.kevin.hannibai.compiler.Constants.GET_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.HANNIBAI;
@@ -124,6 +126,8 @@ public class HandleImplGenerator extends ElementGenerator {
                 Iterable<AnnotationSpec> defValueAnnotation = HannibaiUtils
                         .createDefValueAnnotation(enclosedElement, enclosedElement.asType().toString());
 
+                methodSpecs.add(createContainsMethodSpec(enclosedElement, defValueAnnotation, formatName));
+
                 // The get method
                 methodSpecs.add(createGetMethodSpec(enclosedElement, defValueAnnotation, formatName));
 
@@ -165,6 +169,102 @@ public class HandleImplGenerator extends ElementGenerator {
                 .addFields(fieldSpecs)
                 .addJavadoc(CLASS_JAVA_DOC)
                 .build();
+    }
+
+    private MethodSpec createContainsMethodSpec(Element enclosedElement,
+                                                Iterable<AnnotationSpec> defValueAnnotation,
+                                                String formatName) {
+        // get the default value
+        Object defValue = HannibaiUtils.getDefValue(enclosedElement, enclosedElement.asType().toString());
+        // get the Element TypeName
+        TypeName typeName = TypeName.get(enclosedElement.asType());
+
+        // has the default value
+        if (null != defValue) {
+            return MethodSpec.methodBuilder(CONTAINS + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.BOOLEAN)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(CONTAINS_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("return $T.contains1($N, $L, $S, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            defValue)
+                    .build();
+        } else if (typeName instanceof ClassName) {
+            String type = Utils.join(".", ((ClassName) typeName).simpleNames()) + ".class";
+            return MethodSpec.methodBuilder(CONTAINS + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.BOOLEAN)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(CONTAINS_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .addStatement("return $T.contains2($N, $L, $S, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            type)
+                    .build();
+        } else if (typeName instanceof ParameterizedTypeName) {
+            String rawType = Utils.join(".", ((ParameterizedTypeName) typeName).rawType.simpleNames()) + ".class";
+
+            StringBuffer types = new StringBuffer();
+            List<TypeName> typeArguments = ((ParameterizedTypeName) typeName).typeArguments;
+            for (int i = 0; i < typeArguments.size(); i++) {
+                if (typeArguments.get(i) instanceof ClassName) {
+                    types.append((Utils.join(".", ((ClassName) typeArguments.get(i)).simpleNames()) + ".class"));
+                    if (i != typeArguments.size() - 1) {
+                        types.append(", ");
+                    }
+                } else {
+                    Utils.error(enclosedElement, "don`t support!!!");
+                }
+            }
+
+            return MethodSpec.methodBuilder(CONTAINS + formatName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.BOOLEAN)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(CONTAINS_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .beginControlFlow("$T type = new $T()",
+                            ClassName.get("java.lang.reflect", "Type"),
+                            ClassName.get("java.lang.reflect", "ParameterizedType"))
+
+                    .addCode("@Override\n")
+                    .beginControlFlow("public Type getRawType()")
+                    .addStatement("return " + rawType)
+                    .endControlFlow()
+
+                    .addCode("@Override\n")
+                    .beginControlFlow("public Type[] getActualTypeArguments()")
+                    .addStatement("return new Type[]{" + types + "}")
+                    .endControlFlow()
+
+                    .addCode("@Override\n")
+                    .beginControlFlow("public Type getOwnerType()")
+                    .addStatement("return null")
+                    .endControlFlow()
+
+                    .endControlFlow("")
+                    .addStatement("return $T.contains2($N, $L, $S, $L)",
+                            ClassName.get(PACKAGE_NAME, HANNIBAI),
+                            "mSharedPreferencesName",
+                            "mId",
+                            enclosedElement.getSimpleName(),
+                            "type")
+                    .build();
+        } else {
+            Utils.error(enclosedElement, "don`t support!!!");
+            return null;
+        }
     }
 
     private MethodSpec createGetMethodSpec(Element enclosedElement,
@@ -321,7 +421,7 @@ public class HandleImplGenerator extends ElementGenerator {
                     .beginControlFlow("public void call($T<? super $T> subscriber)",
                             ClassName.bestGuess("rx.Subscriber"),
                             TypeName.get(enclosedElement.asType()).box()
-                            )
+                    )
                     .addStatement("subscriber.onNext($L)", GET + formatName + "()")
                     .addStatement("subscriber.onCompleted()")
                     .endControlFlow()

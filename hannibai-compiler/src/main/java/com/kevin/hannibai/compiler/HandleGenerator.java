@@ -34,6 +34,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import static com.kevin.hannibai.compiler.Constants.CLASS_JAVA_DOC;
+import static com.kevin.hannibai.compiler.Constants.CONTAINS;
+import static com.kevin.hannibai.compiler.Constants.CONTAINS_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.GET;
 import static com.kevin.hannibai.compiler.Constants.GET_METHOD_JAVA_DOC;
 import static com.kevin.hannibai.compiler.Constants.PUT_METHOD_JAVA_DOC;
@@ -72,6 +74,18 @@ class HandleGenerator extends ElementGenerator {
                     submitAnnotation = AnnotationSpec.builder(Commit.class).build();
                     returnType = TypeName.BOOLEAN;
                 }
+
+                // the contains method
+                methodSpecs.add(
+                        MethodSpec.methodBuilder(CONTAINS + formatName)
+                                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                .returns(TypeName.BOOLEAN)
+                                .addAnnotations(defValueAnnotation)
+                                .addJavadoc(String.format(CONTAINS_METHOD_JAVA_DOC,
+                                        enclosedElement.getSimpleName())
+                                )
+                                .build()
+                );
 
                 // The get method
                 methodSpecs.add(
