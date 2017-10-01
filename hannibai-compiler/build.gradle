@@ -16,10 +16,10 @@ dependencies {
 setProperty "POM_ARTIFACT_ID", "hannibai-compiler"
 setProperty "PROJECT_NAME", "Hannibai-compiler"
 setProperty "POM_PACKAGING", "jar"
-setProperty "VERSION_CODE", "16"
-setProperty "VERSION_NAME", "0.3.0"
+setProperty "VERSION_CODE", "17"
+setProperty "VERSION_NAME", "0.3.1"
 
 ext {
     kevinSourceDocFiles = [rootProject.file('gradle/java-sources-docs.gradle')]
 }
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
