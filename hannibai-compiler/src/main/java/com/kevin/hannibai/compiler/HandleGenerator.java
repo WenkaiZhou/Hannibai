@@ -17,6 +17,7 @@ package com.kevin.hannibai.compiler;
 
 import com.kevin.hannibai.annotation.Apply;
 import com.kevin.hannibai.annotation.Commit;
+import com.kevin.hannibai.annotation.RxJava;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
@@ -154,27 +155,18 @@ class HandleGenerator extends ElementGenerator {
                                                      Iterable<AnnotationSpec> defValueAnnotation,
                                                      String formatName) {
 
-        if (RxJavaCheck.RXJAVA_2.equals(RxJavaCheck.RXJAVA)) {
+        RxJava rxJava = HannibaiUtils.checkRxJava(enclosedElement);
 
+        if (rxJava == null) {
+            return null;
+        }
+
+        if (rxJava.value() == RxJava.Version.RXJAVA2) {
             ParameterizedTypeName typeName = ParameterizedTypeName
                     .get(ClassName.bestGuess("io.reactivex.Observable"),
                             TypeName.get(enclosedElement.asType()).box());
 
-            return MethodSpec.methodBuilder(GET + formatName + "1")
-                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                    .returns(typeName)
-                    .addAnnotations(defValueAnnotation)
-                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
-                            enclosedElement.getSimpleName())
-                    )
-                    .build();
-        } else if (RxJavaCheck.RXJAVA_1.equals(RxJavaCheck.RXJAVA)) {
-
-            ParameterizedTypeName typeName = ParameterizedTypeName
-                    .get(ClassName.bestGuess("rx.Observable"),
-                            TypeName.get(enclosedElement.asType()).box());
-
-            return MethodSpec.methodBuilder(GET + formatName + "1")
+            return MethodSpec.methodBuilder(GET + formatName + rxJava.suffix())
                     .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                     .returns(typeName)
                     .addAnnotations(defValueAnnotation)
@@ -183,7 +175,17 @@ class HandleGenerator extends ElementGenerator {
                     )
                     .build();
         } else {
-            return null;
+            ParameterizedTypeName typeName = ParameterizedTypeName
+                    .get(ClassName.bestGuess("rx.Observable"),
+                            TypeName.get(enclosedElement.asType()).box());
+            return MethodSpec.methodBuilder(GET + formatName + rxJava.suffix())
+                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                    .returns(typeName)
+                    .addAnnotations(defValueAnnotation)
+                    .addJavadoc(String.format(GET_METHOD_JAVA_DOC,
+                            enclosedElement.getSimpleName())
+                    )
+                    .build();
         }
     }
 

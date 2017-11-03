@@ -70,6 +70,7 @@ public class HannibaiProcessor extends AbstractProcessor {
             new IHandleGenerator().generate();
 
             for (TypeElement typeElement : typeElements) {
+                Utils.note("Hannibai process " + typeElement.getSimpleName());
                 HandleGenerator handleGenerator = new HandleGenerator(typeElement, HANDLE_SUFFIX);
                 handleGenerator.generate();
                 new HandleImplGenerator(typeElement, HANDLE_IMPL_SUFFIX, handleGenerator.mClassName).generate();

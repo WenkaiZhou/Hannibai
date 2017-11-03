@@ -6,6 +6,7 @@ import com.kevin.hannibai.annotation.DefFloat;
 import com.kevin.hannibai.annotation.DefInt;
 import com.kevin.hannibai.annotation.DefLong;
 import com.kevin.hannibai.annotation.Expire;
+import com.kevin.hannibai.annotation.RxJava;
 import com.kevin.hannibai.annotation.SharePreference;
 
 /**
@@ -14,6 +15,7 @@ import com.kevin.hannibai.annotation.SharePreference;
 
 @SharePreference
 public class TestPreference {
+    @RxJava(value = RxJava.Version.RXJAVA2, suffix = "NB")
     public String name;
     @Commit
     @DefInt(18)

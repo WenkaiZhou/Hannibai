@@ -21,6 +21,7 @@ import com.kevin.hannibai.annotation.DefInt;
 import com.kevin.hannibai.annotation.DefLong;
 import com.kevin.hannibai.annotation.DefString;
 import com.kevin.hannibai.annotation.Expire;
+import com.kevin.hannibai.annotation.RxJava;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 
@@ -161,6 +162,26 @@ final class HannibaiUtils {
             return expire.update();
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Check the RxJava
+     *
+     * @param element
+     * @return
+     */
+    static RxJava checkRxJava(Element element) {
+        RxJava rxJava = element.getAnnotation(RxJava.class);
+        if (rxJava == null) {
+            return null;
+        } else if (rxJava.value() == RxJava.Version.NULL) {
+            return null;
+        } else if (rxJava.suffix().equals("")) {
+            Utils.error(element, "the RxJava suffix should not be \"\".");
+            return null;
+        } else {
+            return rxJava;
         }
     }
 }
