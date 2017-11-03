@@ -175,8 +175,6 @@ final class HannibaiUtils {
         RxJava rxJava = element.getAnnotation(RxJava.class);
         if (rxJava == null) {
             return null;
-        } else if (rxJava.value() == RxJava.Version.NULL) {
-            return null;
         } else if (rxJava.suffix().equals("")) {
             Utils.error(element, "the RxJava suffix should not be \"\".");
             return null;

@@ -7,8 +7,8 @@
 1. 如果您的项目使用 Gradle 构建, 只需要在您的build.gradle文件添加如下到 `dependencies` :
 
 	```
-	compile 'com.kevin:hannibai:0.5.0'
-	annotationProcessor 'com.kevin:hannibai-compiler:0.5.0'
+	compile 'com.kevin:hannibai:0.5.1'
+	annotationProcessor 'com.kevin:hannibai-compiler:0.5.1'
 	```
 
 2. 引入JSON序列化
@@ -30,8 +30,8 @@
 	3. FastJson
     	
     	```
-       compile 'com.kevin:hannibai-converter-fastjson:0.2.6'
-       ```
+		compile 'com.kevin:hannibai-converter-fastjson:0.2.6'
+		```
 	
 3. 这里仅仅实现了Gson、Jackson及FastJson的实现，后续会扩展，或者你也可以扩展。
 
@@ -107,7 +107,7 @@
 	| `Set<xxx>` | Set<User> userSet;|
 	| `XXX<xxx>` | 只支持一级泛型，`List<List<String>>` 这种是不支持的。|
 
-1. 设置默认值
+2. 设置默认值
 
 	```
 	@DefString("zwenkai")
@@ -124,7 +124,7 @@
 	| DefLong | @DefLong(123456789)|
 	| DefFloat | @DefFloat(123.45F)|
 
-2. 设置过期时间
+3. 设置过期时间
 
 	> 默认不会过期
 	
@@ -150,7 +150,7 @@
 	| 小时 | @Expire(value = 1, unit = Expire.Unit.HOURS)|
 	| 天 | @Expire(value = 1, unit = Expire.Unit.DAYS)|
 	
-3. 设置提交类型
+4. 设置提交类型
 
 	> 提交类型有`Commit`和`Apply`两种，默认为`Apply`。
 	
@@ -167,8 +167,46 @@
 		@Apply
 		public String userName;
 		```
+		
+5. 支持RxJava
+
+	> 有些时候，`Observable`对象更好操作，那么你只需要一个注解就能搞定。
 	
-4. 获取操作类
+	```
+	@RxJava()
+	public String name;
+	```
+	
+	使用：
+	
+	```
+    preferenceHandle.getName1().subscribe(new Consumer<String>() {
+        @Override
+        public void accept(String name) throws Exception {
+            Toast.makeText(MainActivity.this, "name = " + name, Toast.LENGTH_SHORT).show();
+        }
+    });
+	```
+	
+	默认的为`getName1()`，如果你觉得这个名字不爽，可以随意配置后缀，且默认为RxJava2，如果为RxJava1。
+	
+	```
+	@RxJava(version = RxJava.Version.RXJAVA1, suffix = "牛")
+	public String name;
+	```
+	
+	那么在使用的时候就是这样的：
+
+	```
+	preferenceHandle.getName牛().subscribe(new Consumer<String>() {
+		@Override
+		public void accept(String name) throws Exception {
+			Toast.makeText(MainActivity.this, "name = " + name, Toast.LENGTH_SHORT).show();
+		}
+	});
+	```
+	
+6. 获取操作类
 
 	> 有两种方式，一种是获取通用的，另一种是可以传入ID参数，为不同用户建立不同`SharePreference`文件。
 
@@ -182,7 +220,8 @@
 		```
 		testPreference = Hannibai.create(TestPreferenceHandle.class, "ID_123");
 		```
-	
+
+
 ## 更多
 
 > 请参考项目中示例

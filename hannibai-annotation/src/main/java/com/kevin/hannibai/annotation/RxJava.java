@@ -29,12 +29,12 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS)
 public @interface RxJava {
-    Version value() default Version.NULL;
+    Version version() default Version.RXJAVA2;
 
     String suffix() default "1";
 
     enum Version {
-        NULL, RXJAVA1, RXJAVA2;
+        RXJAVA1, RXJAVA2;
     }
 
 }

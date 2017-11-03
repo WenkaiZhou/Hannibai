@@ -7,8 +7,8 @@ targetCompatibility = "1.7"
 setProperty "POM_ARTIFACT_ID", "hannibai-annotation"
 setProperty "PROJECT_NAME", "Hannibai-annotation"
 setProperty "POM_PACKAGING", "jar"
-//setProperty "VERSION_CODE", "21"
-//setProperty "VERSION_NAME", "0.5.1"
+setProperty "VERSION_CODE", "22"
+setProperty "VERSION_NAME", "0.5.2"
 
 setProperty "POM_DESCRIPTION", "Hannibai annotation"
 

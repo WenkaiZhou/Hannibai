@@ -376,7 +376,7 @@ public class HandleImplGenerator extends ElementGenerator {
             return null;
         }
 
-        if (rxJava.value() == RxJava.Version.RXJAVA2) {
+        if (rxJava.version() == RxJava.Version.RXJAVA2) {
 
             ParameterizedTypeName typeName = ParameterizedTypeName
                     .get(ClassName.get("io.reactivex", "Observable"),
