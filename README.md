@@ -337,7 +337,7 @@
 
 > 原理比较简单，相信聪明的你早就想到啦。不就是编译时注解搞的鬼嘛，恭喜你答对了。
 
-1. 所有的数据都封装到`BaseModel`中然后转换为JSON存储字符串到``
+1. 所有的数据都封装到`BaseModel`中然后转换为JSON存储字符串到`SharePreference`
 
 	```
 	final class BaseModel<T> {
@@ -489,7 +489,7 @@
 	<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 	<map>
 		<string name="name">{&quot;data&quot;:&quot;Kevin&quot;,&quot;createTime&quot;:1509687733860,&quot;expire&quot;:-1,&quot;expireTime&quot;:0,&quot;updateTime&quot;:1509946500232}</string>
-</map>
+    </map>
 	```
 	
 	**加密：**
