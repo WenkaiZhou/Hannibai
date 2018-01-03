@@ -29,7 +29,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     provided "com.kevin:hannibai-annotation:${VERSION_NAME}"
-    provided 'com.kevin:hannibai:0.2.4'
+    provided 'com.kevin:hannibai:0.5.1'
     provided 'com.alibaba:fastjson:1.2.31'
 }
 

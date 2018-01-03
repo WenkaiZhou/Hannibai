@@ -15,7 +15,7 @@ import com.kevin.hannibai.annotation.SharePreference;
 
 @SharePreference
 public class TestPreference {
-    @RxJava(value = RxJava.Version.RXJAVA2, suffix = "NB")
+    @RxJava(version = RxJava.Version.RXJAVA2, suffix = "NB")
     public String name;
     @Commit
     @DefInt(18)
