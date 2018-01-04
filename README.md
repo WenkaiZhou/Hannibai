@@ -76,6 +76,13 @@
 4. Build —> Rebuild Project
 
 	> 这个过程会自动生成一堆你觉得写起来很恶心的东西。
+	
+	如果项目很庞大，build一次时间比较长，可以使用命令：
+	
+	```
+	// app 换成对应的module名
+	./gradlew app:compileDebugJavaWithJavac
+	```
 
 5. 在代码中使用
 
